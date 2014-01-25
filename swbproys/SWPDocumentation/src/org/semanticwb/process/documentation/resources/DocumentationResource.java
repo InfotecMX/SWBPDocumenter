@@ -6,7 +6,6 @@ package org.semanticwb.process.documentation.resources;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +32,6 @@ import org.semanticwb.process.documentation.model.SectionElement;
 import org.semanticwb.process.documentation.model.SectionElementRef;
 import org.semanticwb.model.FormValidateException;
 import org.semanticwb.model.SWBComparator;
-import org.semanticwb.model.SWBContext;
 import org.semanticwb.platform.SemanticClass;
 import org.semanticwb.platform.SemanticObject;
 import org.semanticwb.platform.SemanticProperty;
@@ -42,7 +40,6 @@ import org.semanticwb.portal.api.GenericAdmResource;
 import org.semanticwb.portal.api.SWBActionResponse;
 import org.semanticwb.portal.api.SWBParamRequest;
 import org.semanticwb.portal.api.SWBResourceException;
-import org.semanticwb.portal.api.SWBResourceURL;
 import org.semanticwb.process.model.ProcessElement;
 import org.semanticwb.process.model.ProcessSite;
 import org.semanticwb.process.model.RepositoryDirectory;
@@ -72,23 +69,15 @@ public class DocumentationResource extends GenericAdmResource {
     public void doView(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramsRequest) throws SWBResourceException, IOException {
         response.setContentType("text/html; charset=UTF-8");
         String suri = request.getParameter("suri") != null ? request.getParameter("suri").toString() : "";
-        boolean isAdminSite = paramsRequest.getWebPage().getWebSiteId().equals(SWBContext.getAdminWebSite().getId());
-        if (isAdminSite) {
-            PrintWriter out = response.getWriter();
-            SWBResourceURL url = paramsRequest.getRenderUrl().setCallMethod(SWBResourceURL.Call_DIRECT).setMode(MODE_VIEW_IFRAME);
-            url.setParameter("suri", suri);
-            out.println("<iframe src=\"" + url + "\" style=\"width:100%; height:100%;\" frameborder=\"0\"></iframe>");
-        } else {
-            ProcessElement processElement = (ProcessElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(suri);
-            String path = "/work/models/" + processElement.getProcessSite().getId() + "/jsp/documentation/documentation.jsp";
-            RequestDispatcher rd = request.getRequestDispatcher(path);
-            request.setAttribute("paramRequest", paramsRequest);
-            request.setAttribute("suri", suri);
-            try {
-                rd.include(request, response);
-            } catch (ServletException ex) {
-                log.error("Error on doView, " + path + ", " + ex.getMessage());
-            }
+        ProcessElement processElement = (ProcessElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(suri);
+        String path = "/work/models/" + processElement.getProcessSite().getId() + "/jsp/documentation/documentation.jsp";
+        RequestDispatcher rd = request.getRequestDispatcher(path);
+        request.setAttribute("paramRequest", paramsRequest);
+        request.setAttribute("suri", suri);
+        try {
+            rd.include(request, response);
+        } catch (ServletException ex) {
+            log.error("Error on doView, " + path + ", " + ex.getMessage());
         }
     }
 
