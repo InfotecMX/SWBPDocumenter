@@ -6,6 +6,7 @@
         <fieldset legend="General">
             <input type="TEXT" name="templatePage" label="ID de la página de administración de plantillas:"/>
             <input type="TEXT" name="contentPage" label="ID de la página de captura de documentación:"/>
+            <input type="TEXT" name="docRole" label="ID del rol de documentador:"/>
         </fieldset>
         <fieldset>
             <input type="submit" name="btnSave" id="btnSave" value="Guardar" />
