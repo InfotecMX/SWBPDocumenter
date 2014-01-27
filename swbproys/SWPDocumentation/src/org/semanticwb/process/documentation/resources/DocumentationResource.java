@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.semanticwb.process.documentation.resources;
 
 import java.io.IOException;
@@ -46,13 +42,12 @@ import org.semanticwb.process.model.RepositoryDirectory;
 import org.semanticwb.process.model.RepositoryFile;
 
 /**
- *
+ * Recurso que gestiona la vista de la documentación de procesos.
  * @author carlos.alvarez
  */
 public class DocumentationResource extends GenericAdmResource {
 
     private final Logger log = SWBUtils.getLogger(DocumentationResource.class);
-    public final static String MODE_VIEW_IFRAME = "mvi";
     public final static String VIEW_DTB = "vdtb";
     public final static String ADD_SECTION = "as";
     public final static String ADD_SECTION_ACTIVITY = "asa";
@@ -66,27 +61,27 @@ public class DocumentationResource extends GenericAdmResource {
     public final static String VIEW_LOG = "vloc";
 
     @Override
-    public void doView(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramsRequest) throws SWBResourceException, IOException {
+    public void doView(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramRequest) throws SWBResourceException, IOException {
         response.setContentType("text/html; charset=UTF-8");
-        String suri = request.getParameter("suri") != null ? request.getParameter("suri").toString() : "";
-        ProcessElement processElement = (ProcessElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(suri);
-        String path = "/work/models/" + processElement.getProcessSite().getId() + "/jsp/documentation/documentation.jsp";
+        String suri = request.getParameter("suri");
+        String path = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/documentation.jsp";
         RequestDispatcher rd = request.getRequestDispatcher(path);
-        request.setAttribute("paramRequest", paramsRequest);
-        request.setAttribute("suri", suri);
+
         try {
+            request.setAttribute("paramRequest", paramRequest);
+            if (suri != null && suri.length() > 0) {
+                request.setAttribute("suri", suri);
+            }
             rd.include(request, response);
         } catch (ServletException ex) {
-            log.error("Error on doView, " + path + ", " + ex.getMessage());
+            log.error("Error on doView, " + path, ex);
         }
     }
 
     @Override
     public void processRequest(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramRequest) throws SWBResourceException, IOException {
         String mode = paramRequest.getMode();
-        if (mode.equals(MODE_VIEW_IFRAME)) {
-            doViewIframe(request, response, paramRequest);
-        } else if (mode.equals(ADD_SECTION)) {
+        if (mode.equals(ADD_SECTION)) {
             doAddSection(request, response, paramRequest);
         } else if (mode.equals(EDIT_SECTION_INSTANCE)) {
             doEditSection(request, response, paramRequest);
@@ -134,7 +129,7 @@ public class DocumentationResource extends GenericAdmResource {
                     se.setParentSection(dsi.getSecTypeDefinition());
                     dsi.addDocuSectionElementInstance(se);
                 } catch (FormValidateException ex) {
-                    log.error("Error on processAction, " + action + ", " + ex.getMessage());
+                    log.error("Error on processAction, " + action, ex);
                 }
             }
             response.setRenderParameter("suri", suri);
@@ -271,7 +266,7 @@ public class DocumentationResource extends GenericAdmResource {
                     response.setRenderParameter("sptab", uridsi);
                     response.setMode(UPDATE_SURI);
                 } catch (Exception ex) {
-                    log.error("Error on processAction, " + action + ", " + ex.getMessage());
+                    log.error("Error on processAction, " + action, ex);
                 }
             }
         } else if (action.equals(ADD_SECTION_ACTIVITY)) {
@@ -342,7 +337,7 @@ public class DocumentationResource extends GenericAdmResource {
                 try {
                     forMgr.processForm(request);
                 } catch (FormValidateException ex) {
-                    log.error("Error on processAction, " + action + ", " + ex.getMessage());
+                    log.error("Error on processAction, " + action, ex);
                 }
             }
             response.setRenderParameter("suri", suri);
@@ -457,7 +452,7 @@ public class DocumentationResource extends GenericAdmResource {
                     response.setRenderParameter("sptab", uridsi);
                     response.setMode(UPDATE_SURI);
                 } catch (Exception ex) {
-                    log.error("Error on processAction, " + action + ", " + ex.getMessage());
+                    log.error("Error on processAction, " + action, ex);
                 }
             }
         } else if (action.equals(REMOVE_SECTION_INSTANCE)) {
@@ -500,51 +495,46 @@ public class DocumentationResource extends GenericAdmResource {
         }
     }
 
-    public void doViewIframe(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramsRequest) throws SWBResourceException, IOException {
-        response.setContentType("text/html; charset=UTF-8");
-        String suri = request.getParameter("suri") != null ? request.getParameter("suri").toString() : "";
-        ProcessElement processElement = (ProcessElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(suri);
-        String path = "/work/models/" + processElement.getProcessSite().getId() + "/jsp/documentation/documentation.jsp";
-        RequestDispatcher rd = request.getRequestDispatcher(path);
-        request.setAttribute("paramRequest", paramsRequest);
-        request.setAttribute("suri", suri);
-        try {
-            rd.include(request, response);
-        } catch (ServletException ex) {
-            log.error("Error on doViewIframe, " + path + ", " + ex.getMessage());
-        }
-    }
-
     public void doAddSection(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramRequest) throws SWBResourceException, IOException {
         response.setContentType("text/html; charset=UTF-8");
-        String suri = request.getParameter("suri") != null ? request.getParameter("suri").toString() : "";
-        ProcessElement processElement = (ProcessElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(suri);
-        String path = "/work/models/" + processElement.getProcessSite().getId() + "/jsp/documentation/documentationEdit.jsp";
-        request.setAttribute("paramRequest", paramRequest);
-        request.setAttribute("suri", suri);
-        request.setAttribute("uridi", request.getParameter("uridi"));
-        request.setAttribute("uridsi", request.getParameter("uridsi"));
+        String suri = request.getParameter("suri");
+        String path = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/documentationEdit.jsp";
+        
         RequestDispatcher rd = request.getRequestDispatcher(path);
         try {
+            request.setAttribute("paramRequest", paramRequest);
+            if (suri != null && suri.length() > 0) {
+                request.setAttribute("suri", suri);
+            }
+            if (request.getParameter("uridi") != null) {
+                request.setAttribute("uridi", request.getParameter("uridi"));
+            }
+            if (request.getParameter("uridsi") != null) {
+                request.setAttribute("uridsi", request.getParameter("uridsi"));
+            }
             rd.include(request, response);
         } catch (ServletException ex) {
-            log.error("Error on doAddSection, " + path + ", " + ex.getMessage());
+            log.error("Error on doAddSection, " + path, ex);
         }
     }
 
     public void doEditSection(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramRequest) throws SWBResourceException, IOException {
         response.setContentType("text/html; charset=UTF-8");
-        String suri = request.getParameter("suri") != null ? request.getParameter("suri").toString() : "";
-        ProcessElement processElement = (ProcessElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(suri);
-        String path = "/work/models/" + processElement.getProcessSite().getId() + "/jsp/documentation/documentationEdit.jsp";
-        request.setAttribute("paramRequest", paramRequest);
-        request.setAttribute("suri", suri);
-        request.setAttribute("urisei", request.getParameter("urisei"));
+        String suri = request.getParameter("suri");
+        String path = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/documentationEdit.jsp";
+        
         RequestDispatcher rd = request.getRequestDispatcher(path);
         try {
+            request.setAttribute("paramRequest", paramRequest);
+            if (suri != null && suri.length() > 0) {
+                request.setAttribute("suri", suri);
+            }
+            if (request.getParameter("urisei") != null) {
+                request.setAttribute("urisei", request.getParameter("urisei"));
+            }
             rd.include(request, response);
         } catch (ServletException ex) {
-            log.error("Error on doEditSection, " + path + ", " + ex.getMessage());
+            log.error("Error on doEditSection, " + path, ex);
         }
     }
 
@@ -555,17 +545,21 @@ public class DocumentationResource extends GenericAdmResource {
 
     public void doViewLog(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramRequest) throws SWBResourceException, IOException {
         response.setContentType("text/html; charset=UTF-8");
-        String suri = request.getParameter("suri") != null ? request.getParameter("suri").toString() : "";
-        ProcessElement processElement = (ProcessElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(suri);
-        String path = "/work/models/" + processElement.getProcessSite().getId() + "/jsp/documentation/logView.jsp";
-        request.setAttribute("paramRequest", paramRequest);
-        request.setAttribute("suri", suri);
-        request.setAttribute("uridt", request.getParameter("uridt"));
+        String suri = request.getParameter("suri");
+        String path = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/logView.jsp";
+        
         RequestDispatcher rd = request.getRequestDispatcher(path);
         try {
+            request.setAttribute("paramRequest", paramRequest);
+            if (suri != null && suri.length() > 0) {
+                request.setAttribute("suri", suri);
+            }
+            if (request.getParameter("uridt") != null) {
+                request.setAttribute("uridt", request.getParameter("uridt"));
+            }
             rd.include(request, response);
         } catch (ServletException ex) {
-            log.error("Error on doViewLog, " + path + ", " + ex.getMessage());
+            log.error("Error on doViewLog, " + path, ex);
         }
     }
 }
