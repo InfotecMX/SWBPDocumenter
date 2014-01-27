@@ -90,7 +90,7 @@ public class DocumentationResource extends GenericAdmResource {
         } else if (mode.equals(VIEW_LOG)) {
             doViewLog(request, response, paramRequest);
         } else {
-            super.processRequest(request, response, paramRequest); //To change body of generated methods, choose Tools | Templates.
+            super.processRequest(request, response, paramRequest);
         }
     }
 
