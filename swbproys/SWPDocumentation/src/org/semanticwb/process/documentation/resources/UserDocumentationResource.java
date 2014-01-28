@@ -10,16 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.semanticwb.Logger;
 import org.semanticwb.SWBUtils;
-import org.semanticwb.model.Role;
 import org.semanticwb.model.SWBComparator;
-import org.semanticwb.process.documentation.model.DocumentationInstance;
 import org.semanticwb.model.User;
 import org.semanticwb.model.WebSite;
 import org.semanticwb.portal.api.GenericAdmResource;
 import org.semanticwb.portal.api.SWBActionResponse;
 import org.semanticwb.portal.api.SWBParamRequest;
 import org.semanticwb.portal.api.SWBResourceException;
-import org.semanticwb.process.model.StartEvent;
 import org.semanticwb.process.model.Process;
 
 /**
@@ -103,6 +100,14 @@ public class UserDocumentationResource extends GenericAdmResource {
         ArrayList<Process> unpaged = new ArrayList();
         int page = 1;
         int itemsPerPage = 10;
+        
+        if (getResourceBase().getAttribute("itemsPerPage") != null) {
+            try {
+                itemsPerPage = Integer.parseInt(getResourceBase().getAttribute("itemsPerPage"));
+            } catch (NumberFormatException ex) {
+                itemsPerPage = 10;
+            }
+        }
         //boolean isDocumenter = false;
         
         /*Role docRole = site.getUserRepository().getRole(getResourceBase().getAttribute("docRole"));
