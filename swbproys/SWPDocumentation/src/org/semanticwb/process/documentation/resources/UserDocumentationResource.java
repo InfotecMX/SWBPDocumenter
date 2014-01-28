@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.semanticwb.Logger;
 import org.semanticwb.SWBUtils;
+import org.semanticwb.model.Role;
 import org.semanticwb.process.documentation.model.DocumentationInstance;
 import org.semanticwb.model.User;
 import org.semanticwb.model.WebSite;
@@ -59,7 +60,7 @@ public class UserDocumentationResource extends GenericAdmResource {
             request.setAttribute(ATT_PROCESSLIST, listUserProcesses(paramRequest.getUser(), paramRequest.getWebPage().getWebSite(), request));
             rd.include(request, response);
         } catch (ServletException ex) {
-            log.error("UserDocumentationResource - problema al incluir documentationView.jsp", ex);
+            log.error("UserDocumentationResource - problema al incluir userDocumentation.jsp", ex);
         }
     }
 
@@ -68,7 +69,6 @@ public class UserDocumentationResource extends GenericAdmResource {
         RequestDispatcher rd = request.getRequestDispatcher(jsp);
         try {
             request.setAttribute(ATT_PARAMREQUEST, paramRequest);
-            request.setAttribute("uridi", request.getParameter("uridi"));
             rd.include(request, response);
         } catch (ServletException ex) {
             log.error("UserDocumentationResource - problema al incluir userDocumentationView.jsp", ex);
@@ -102,22 +102,23 @@ public class UserDocumentationResource extends GenericAdmResource {
         ArrayList<Process> unpaged = new ArrayList();
         int page = 1;
         int itemsPerPage = 10;
+        boolean isDocumenter = false;
+        
+        Role docRole = site.getUserRepository().getRole(getResourceBase().getAttribute("docRole"));
+        Role adminRole = site.getUserRepository().getRole(getResourceBase().getAttribute("admin"));
+        if (user.hasRole(docRole) || user.hasRole(adminRole)) {
+            isDocumenter = true;
+        }
 
         Iterator<StartEvent> startEvents = StartEvent.ClassMgr.listStartEvents(site);
-        if (user != null) {
-            while (startEvents.hasNext()) {
-                StartEvent sevt = startEvents.next();
-                //Checar si el proceso tiene instancias del template
-//                if (sevt.getProcess() != null && sevt.getContainer() != null && sevt.getContainer() instanceof Process && user.haveAccess(sevt)) {//El usuario tiene permisos en el evento
-                if (sevt.getProcess() != null && sevt.getContainer() != null && sevt.getContainer() instanceof Process) {//El usuario tiene permisos en el evento
-                    Process itp = sevt.getProcess();
-//                    if (itp != null && itp.isValid() && user.haveAccess(itp)) {//El proceso del evento es válido y el usuario tiene acceso al proceso
-                    if (itp != null && itp.isValid()) {//El proceso del evento es válido y el usuario tiene acceso al proceso
-//                        if (DocumentationInstance.ClassMgr.listDocumentationInstanceByProcessRef(itp, itp.getProcessSite()).hasNext()) {
-                        if (DocumentationInstance.ClassMgr.listDocumentationInstanceByProcessRef(itp, itp.getProcessSite()).hasNext()) {
-                            if (!unpaged.contains(itp)) {
-                                unpaged.add(itp);
-                            }
+        while (startEvents.hasNext()) {
+            StartEvent sevt = startEvents.next();
+            if (sevt.getProcess() != null && sevt.getContainer() != null && sevt.getContainer() instanceof Process && (user.haveAccess(sevt) || isDocumenter)) {
+                Process itp = sevt.getProcess();
+                if (itp != null && itp.isValid() && (user.haveAccess(itp) || isDocumenter)) {//El proceso del evento es válido y el usuario tiene acceso al proceso
+                    if (DocumentationInstance.ClassMgr.listDocumentationInstanceByProcessRef(itp, itp.getProcessSite()).hasNext() || isDocumenter) {
+                        if (!unpaged.contains(itp)) {
+                            unpaged.add(itp);
                         }
                     }
                 }
