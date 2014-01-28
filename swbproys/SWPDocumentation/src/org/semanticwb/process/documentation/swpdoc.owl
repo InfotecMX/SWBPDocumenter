@@ -9,95 +9,169 @@
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
   xml:base="http://www.semanticwebbuilder.org/resources/documentation">
   <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology"/>
+    <owl:imports rdf:resource="http://www.semanticwebbuilder.org/swb4/process"/>
     <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Created with TopBraid Composer</owl:versionInfo>
-    <owl:imports rdf:resource="http://www.semanticwebbuilder.org/swb4/process"/>
-    <owl:imports rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology"/>
   </owl:Ontology>
-  <owl:Class rdf:ID="Model">
-    <rdfs:label xml:lang="es">Modelo del proceso</rdfs:label>
+  <owl:Class rdf:ID="DocumentSectionInstance">
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
     <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:autogenId>
-    <rdfs:label xml:lang="en">Model of process</rdfs:label>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Activity">
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdfs:label xml:lang="es">Actividad</rdfs:label>
+    <rdfs:label xml:lang="en">Activity</rdfs:label>
     <rdfs:subClassOf>
-      <swb:Class rdf:ID="SectionElement">
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Descriptiveable"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
+      <owl:Class rdf:ID="SectionElement"/>
     </rdfs:subClassOf>
     <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
   </owl:Class>
-  <owl:Class rdf:ID="Objetive">
+  <owl:Class rdf:ID="Prefixeable">
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBInterface"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Interface"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ReferenceObject">
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
+  <owl:Class rdf:about="#SectionElement">
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Sortable"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Descriptiveable"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Referable">
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBInterface"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Interface"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DocumentationInstance">
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SectionElementRef">
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdfs:subClassOf rdf:resource="#ReferenceObject"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Instantiable">
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBInterface"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Interface"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ActivityRef">
+    <rdfs:subClassOf rdf:resource="#ReferenceObject"/>
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Policy">
+    <rdfs:subClassOf rdf:resource="#Prefixeable"/>
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
     <rdfs:subClassOf>
-      <swb:Interface rdf:ID="Instantiable">
+      <swb:Interface rdf:ID="Numerable">
+        <rdfs:label xml:lang="en">Numerable</rdfs:label>
+        <rdfs:label xml:lang="es">Numerable</rdfs:label>
         <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBInterface"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
       </swb:Interface>
     </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">Policy</rdfs:label>
+    <rdfs:label xml:lang="es">Política</rdfs:label>
     <rdfs:subClassOf rdf:resource="#SectionElement"/>
-    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</swb:autogenId>
-    <rdfs:label xml:lang="es">Objetivo</rdfs:label>
-    <rdfs:label xml:lang="en">Objetive</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Instantiable"/>
     <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
   </owl:Class>
-  <owl:Class rdf:ID="BusinessRole">
-    <rdfs:subClassOf rdf:resource="#SectionElement"/>
-    <swb:classCodeName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Role</swb:classCodeName>
-    <rdfs:label xml:lang="en">Role</rdfs:label>
-    <rdfs:label xml:lang="es">Rol</rdfs:label>
+  <owl:Class rdf:ID="DocumentTemplate">
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
     <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:autogenId>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Descriptiveable"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Format">
     <rdfs:subClassOf rdf:resource="#Instantiable"/>
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdfs:subClassOf rdf:resource="#Referable"/>
+    <rdfs:label xml:lang="es">Formato</rdfs:label>
+    <rdfs:label xml:lang="en">Format</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#SectionElement"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Indicator">
+    <rdfs:subClassOf rdf:resource="#Instantiable"/>
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdfs:subClassOf rdf:resource="#Numerable"/>
+    <rdfs:label xml:lang="en">Indicator</rdfs:label>
+    <rdfs:label xml:lang="es">Indicador</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#SectionElement"/>
     <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
   </owl:Class>
   <owl:Class rdf:ID="BusinessRule">
     <rdfs:subClassOf rdf:resource="#SectionElement"/>
     <rdfs:subClassOf rdf:resource="#Instantiable"/>
-    <rdfs:subClassOf>
-      <owl:Class rdf:ID="Numerable"/>
-    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Numerable"/>
     <rdfs:label xml:lang="es">Regla</rdfs:label>
     <rdfs:label xml:lang="en">Rule</rdfs:label>
-    <rdfs:subClassOf>
-      <swb:Interface rdf:ID="Prefixeable">
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBInterface"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Interface>
-    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Prefixeable"/>
     <swb:classCodeName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Rule</swb:classCodeName>
     <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:autogenId>
     <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
   </owl:Class>
+  <owl:Class rdf:ID="DocumentSection">
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Sortable"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Activeable"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Descriptiveable"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
+    <rdfs:subClassOf rdf:resource="#Prefixeable"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Risk">
+    <rdfs:subClassOf rdf:resource="#Instantiable"/>
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdfs:label xml:lang="es">Riesgo</rdfs:label>
+    <rdfs:label xml:lang="en">Risk</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#SectionElement"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
   <owl:Class rdf:ID="Definition">
     <rdfs:label xml:lang="en">Definition</rdfs:label>
     <rdfs:subClassOf rdf:resource="#Instantiable"/>
     <rdfs:subClassOf rdf:resource="#Prefixeable"/>
-    <rdfs:subClassOf>
-      <owl:Class rdf:about="#Numerable"/>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <swb:Interface rdf:ID="Referable">
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBInterface"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Interface>
-    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Numerable"/>
+    <rdfs:subClassOf rdf:resource="#Referable"/>
     <rdfs:label xml:lang="es">Términos</rdfs:label>
     <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
     <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:autogenId>
     <rdfs:subClassOf rdf:resource="#SectionElement"/>
   </owl:Class>
-  <owl:Class rdf:about="#Numerable">
-    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBInterface"/>
-    <rdfs:label xml:lang="es">Numerable</rdfs:label>
-    <rdfs:label xml:lang="en">Numerable</rdfs:label>
-    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Interface"/>
+  <owl:Class rdf:ID="FreeText">
+    <rdfs:subClassOf rdf:resource="#SectionElement"/>
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdfs:label xml:lang="es">Texto libre</rdfs:label>
+    <rdfs:label xml:lang="en">Free text</rdfs:label>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
   </owl:Class>
   <owl:Class rdf:ID="Reference">
     <rdfs:subClassOf rdf:resource="#Prefixeable"/>
@@ -112,148 +186,82 @@
     <rdfs:subClassOf rdf:resource="#Referable"/>
   </owl:Class>
   <owl:ObjectProperty rdf:ID="sectionType">
-    <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+    <rdfs:domain rdf:resource="#DocumentSection"/>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_sectionType">
         <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#selectOneModel"/>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
-    <rdfs:domain>
-      <swb:Class rdf:ID="DocumentSection">
-        <rdfs:subClassOf rdf:resource="#Prefixeable"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Descriptiveable"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Activeable"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Sortable"/>
-        <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</swb:autogenId>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
-    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasProcessElementScope">
-    <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#ProcessElement"/>
     <rdfs:domain rdf:resource="#SectionElement"/>
+    <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#ProcessElement"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasDocumentSection">
-    <rdfs:range rdf:resource="#DocumentSection"/>
+    <rdfs:domain rdf:resource="#DocumentTemplate"/>
     <swb:removeDependency rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:removeDependency>
-    <rdfs:domain>
-      <swb:Class rdf:ID="DocumentTemplate">
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Descriptiveable"/>
-        <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</swb:autogenId>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
-    </rdfs:domain>
+    <rdfs:range rdf:resource="#DocumentSection"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="processActivity">
-    <rdfs:domain>
-      <swb:Class rdf:ID="ActivityRef">
-        <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</swb:autogenId>
-        <rdfs:subClassOf>
-          <swb:Class rdf:ID="ReferenceObject">
-            <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
-            <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
-            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-          </swb:Class>
-        </rdfs:subClassOf>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
-    </rdfs:domain>
     <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#Activity"/>
+    <rdfs:domain rdf:resource="#ActivityRef"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="processType">
     <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#Process"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasDocumnetSectionInstance">
-    <rdfs:domain>
-      <swb:Class rdf:ID="DocumentationInstance">
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
-        <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</swb:autogenId>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
-    </rdfs:domain>
-    <rdfs:range>
-      <swb:Class rdf:ID="DocumentSectionInstance">
-        <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</swb:autogenId>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
-    </rdfs:range>
     <swb:removeDependency rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:removeDependency>
+    <rdfs:range rdf:resource="#DocumentSectionInstance"/>
+    <rdfs:domain rdf:resource="#DocumentationInstance"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="documentDefType">
     <rdfs:range rdf:resource="#DocumentTemplate"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="refRepository">
-    <rdfs:domain rdf:resource="#Referable"/>
     <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#RepositoryElement"/>
+    <rdfs:domain rdf:resource="#Referable"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasProcess">
-    <rdfs:domain rdf:resource="#DocumentTemplate"/>
     <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#Process"/>
+    <rdfs:domain rdf:resource="#DocumentTemplate"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="parentSection">
+    <rdfs:domain rdf:resource="#SectionElement"/>
+    <rdfs:range rdf:resource="#DocumentSection"/>
     <owl:inverseOf>
       <owl:ObjectProperty rdf:ID="hasSectionElementInv"/>
     </owl:inverseOf>
-    <rdfs:range rdf:resource="#DocumentSection"/>
-    <rdfs:domain rdf:resource="#SectionElement"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasDocuSectionElementInstance">
-    <rdfs:domain rdf:resource="#DocumentSectionInstance"/>
+    <rdfs:range rdf:resource="#SectionElement"/>
     <swb:removeDependency rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:removeDependency>
-    <rdfs:range rdf:resource="#SectionElement"/>
+    <rdfs:domain rdf:resource="#DocumentSectionInstance"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="activityRef">
-    <rdfs:domain>
-      <swb:Class rdf:ID="Activity">
-        <rdfs:subClassOf rdf:resource="#SectionElement"/>
-        <rdfs:label xml:lang="en">Activity</rdfs:label>
-        <rdfs:label xml:lang="es">Actividad</rdfs:label>
-        <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</swb:autogenId>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
-    </rdfs:domain>
-    <rdfs:range rdf:resource="#ActivityRef"/>
     <swb:removeDependency rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:removeDependency>
+    <rdfs:range rdf:resource="#ActivityRef"/>
+    <rdfs:domain rdf:resource="#Activity"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasDocumentationInstanceInv">
     <swb:propertyCodeName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >hasDocumentationInstance</swb:propertyCodeName>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="secTypeDefinition">
-    <rdfs:range rdf:resource="#DocumentSection"/>
     <rdfs:domain rdf:resource="#DocumentSectionInstance"/>
+    <rdfs:range rdf:resource="#DocumentSection"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="processRef">
-    <rdfs:domain rdf:resource="#DocumentationInstance"/>
     <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#Process"/>
+    <rdfs:domain rdf:resource="#DocumentationInstance"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="activity">
+    <rdfs:domain rdf:resource="#SectionElementRef"/>
     <rdfs:range rdf:resource="#Activity"/>
-    <rdfs:domain>
-      <swb:Class rdf:ID="SectionElementRef">
-        <rdfs:subClassOf rdf:resource="#ReferenceObject"/>
-        <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</swb:autogenId>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
-    </rdfs:domain>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#hasSectionElementInv">
     <swb:propertyCodeName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -263,318 +271,295 @@
     <rdfs:range rdf:resource="#SectionElement"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="sectionElement">
-    <rdfs:range rdf:resource="#SectionElement"/>
-    <rdfs:domain rdf:resource="#SectionElementRef"/>
     <swb:removeDependency rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:removeDependency>
+    <rdfs:domain rdf:resource="#SectionElementRef"/>
+    <rdfs:range rdf:resource="#SectionElement"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasSectionElementRef">
-    <rdfs:range rdf:resource="#SectionElementRef"/>
+    <rdfs:domain rdf:resource="#Activity"/>
     <swb:removeDependency rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:removeDependency>
-    <rdfs:domain rdf:resource="#Activity"/>
+    <rdfs:range rdf:resource="#SectionElementRef"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="docTypeDefinition">
-    <rdfs:range rdf:resource="#DocumentTemplate"/>
-    <rdfs:domain rdf:resource="#DocumentationInstance"/>
+    <owl:inverseOf rdf:resource="#hasDocumentationInstanceInv"/>
     <swb:removeDependency rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:removeDependency>
-    <owl:inverseOf rdf:resource="#hasDocumentationInstanceInv"/>
+    <rdfs:domain rdf:resource="#DocumentationInstance"/>
+    <rdfs:range rdf:resource="#DocumentTemplate"/>
   </owl:ObjectProperty>
   <owl:DatatypeProperty rdf:ID="weightingIndicator">
-    <rdfs:domain>
-      <swb:Class rdf:ID="Indicator">
-        <rdfs:subClassOf rdf:resource="#SectionElement"/>
-        <rdfs:label xml:lang="es">Indicador</rdfs:label>
-        <rdfs:label xml:lang="en">Indicator</rdfs:label>
-        <rdfs:subClassOf rdf:resource="#Numerable"/>
-        <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</swb:autogenId>
-        <rdfs:subClassOf rdf:resource="#Instantiable"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
-    </rdfs:domain>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_weightingIndicator">
+        <rdfs:label xml:lang="es">Ponderación de indicador</rdfs:label>
+        <rdfs:label xml:lang="en">Weighting indicator</rdfs:label>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >28</swb:index>
-        <rdfs:label xml:lang="en">Weighting indicator</rdfs:label>
-        <rdfs:label xml:lang="es">Ponderación de indicador</rdfs:label>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Indicator"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="informationSource">
-    <rdfs:domain rdf:resource="#Indicator"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_informationSource">
+        <rdfs:label xml:lang="es">Fuente de información</rdfs:label>
+        <rdfs:label xml:lang="en">Information source</rdfs:label>
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >23</swb:index>
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
-        <rdfs:label xml:lang="en">Information source</rdfs:label>
-        <rdfs:label xml:lang="es">Fuente de información</rdfs:label>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Indicator"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="keyWords">
-    <rdfs:domain>
-      <swb:Class rdf:ID="Format">
-        <rdfs:subClassOf rdf:resource="#SectionElement"/>
-        <rdfs:label xml:lang="en">Format</rdfs:label>
-        <rdfs:label xml:lang="es">Formato</rdfs:label>
-        <rdfs:subClassOf rdf:resource="#Referable"/>
-        <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</swb:autogenId>
-        <rdfs:subClassOf rdf:resource="#Instantiable"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
-    </rdfs:domain>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</swb:localeable>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_keyWords">
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
+        <rdfs:label xml:lang="es">Palabras clave</rdfs:label>
+        <rdfs:label xml:lang="en">Key words</rdfs:label>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >22</swb:index>
-        <rdfs:label xml:lang="en">Key words</rdfs:label>
-        <rdfs:label xml:lang="es">Palabras clave</rdfs:label>
-      </swbxf:DisplayProperty>
-    </swb:displayProperty>
-  </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="documentType">
-    <swb:displayProperty>
-      <swbxf:DisplayProperty rdf:ID="dp_documentType">
-        <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-        >21</swb:index>
         <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
-        <rdfs:label xml:lang="en">Document type</rdfs:label>
-        <rdfs:label xml:lang="es">Tipo de documento</rdfs:label>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
-    <rdfs:domain rdf:resource="#Format"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:localeable>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Format"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="documentType">
+    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:localeable>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Format"/>
+    <swb:displayProperty>
+      <swbxf:DisplayProperty rdf:ID="dp_documentType">
+        <rdfs:label xml:lang="es">Tipo de documento</rdfs:label>
+        <rdfs:label xml:lang="en">Document type</rdfs:label>
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
+        <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >21</swb:index>
+      </swbxf:DisplayProperty>
+    </swb:displayProperty>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="text">
-    <rdfs:domain>
-      <swb:Class rdf:ID="FreeText">
-        <rdfs:label xml:lang="en">Free text</rdfs:label>
-        <rdfs:label xml:lang="es">Texto libre</rdfs:label>
-        <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</swb:autogenId>
-        <rdfs:subClassOf rdf:resource="#SectionElement"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-      </swb:Class>
-    </rdfs:domain>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#FreeText"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="file">
-    <rdfs:label xml:lang="en">File</rdfs:label>
-    <rdfs:label xml:lang="es">Archivo</rdfs:label>
-    <swb:required rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</swb:required>
+    <rdfs:domain rdf:resource="#Referable"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_refFile">
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >27</swb:index>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="#Referable"/>
+    <swb:required rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:required>
+    <rdfs:label xml:lang="es">Archivo</rdfs:label>
+    <rdfs:label xml:lang="en">File</rdfs:label>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="typeReference">
+    <rdfs:domain rdf:resource="#Reference"/>
+    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:localeable>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_typeReference">
-        <rdfs:label xml:lang="es">Tipo de referencia</rdfs:label>
-        <rdfs:label xml:lang="en">Type of reference</rdfs:label>
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >5</swb:index>
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
+        <rdfs:label xml:lang="en">Type of reference</rdfs:label>
+        <rdfs:label xml:lang="es">Tipo de referencia</rdfs:label>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</swb:localeable>
-    <rdfs:domain rdf:resource="#Reference"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="responsible">
-    <rdfs:domain rdf:resource="#Indicator"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_responsible">
+        <rdfs:label xml:lang="es">Responsable</rdfs:label>
+        <rdfs:label xml:lang="en">Responsible</rdfs:label>
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >25</swb:index>
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
-        <rdfs:label xml:lang="en">Responsible</rdfs:label>
-        <rdfs:label xml:lang="es">Responsable</rdfs:label>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Indicator"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="configData">
-    <rdfs:domain rdf:resource="#DocumentSection"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#DocumentSection"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="relatedSubjects">
-    <rdfs:domain rdf:resource="#Format"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</swb:localeable>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_relatedSubjects">
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
+        <rdfs:label xml:lang="es">Temas relacionados</rdfs:label>
+        <rdfs:label xml:lang="en">Related subjects</rdfs:label>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >23</swb:index>
-        <rdfs:label xml:lang="en">Related subjects</rdfs:label>
-        <rdfs:label xml:lang="es">Temas relacionados</rdfs:label>
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
+    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:localeable>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Format"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="visibleProperties">
-    <rdfs:domain rdf:resource="#DocumentSection"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#DocumentSection"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="formula">
-    <rdfs:domain rdf:resource="#Indicator"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_formula">
+        <rdfs:label xml:lang="es">Fórmula</rdfs:label>
+        <rdfs:label xml:lang="en">Formula</rdfs:label>
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >24</swb:index>
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
-        <rdfs:label xml:lang="en">Formula</rdfs:label>
-        <rdfs:label xml:lang="es">Fórmula</rdfs:label>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Indicator"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="frequencyCalculation">
-    <rdfs:domain rdf:resource="#Indicator"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_frequencyCalculation">
+        <rdfs:label xml:lang="es">Frecuencia de cálculo</rdfs:label>
+        <rdfs:label xml:lang="en">Frequency calculation</rdfs:label>
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >26</swb:index>
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
-        <rdfs:label xml:lang="en">Frequency calculation</rdfs:label>
-        <rdfs:label xml:lang="es">Frecuencia de cálculo</rdfs:label>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Indicator"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="clasification">
-    <rdfs:domain rdf:resource="#Indicator"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</swb:localeable>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_clasification">
+        <rdfs:label xml:lang="es">Clasificación</rdfs:label>
+        <rdfs:label xml:lang="en">Clasification</rdfs:label>
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >22</swb:index>
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
-        <rdfs:label xml:lang="en">Clasification</rdfs:label>
-        <rdfs:label xml:lang="es">Clasificación</rdfs:label>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
+    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:localeable>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Indicator"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="objetive">
+    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:localeable>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Indicator"/>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_objetive">
+        <rdfs:label xml:lang="es">Objetivo</rdfs:label>
+        <rdfs:label xml:lang="en">Objetive</rdfs:label>
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >19</swb:index>
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
-        <rdfs:label xml:lang="en">Objetive</rdfs:label>
-        <rdfs:label xml:lang="es">Objetivo</rdfs:label>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
-    <rdfs:domain rdf:resource="#Indicator"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</swb:localeable>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="prefix">
-    <rdfs:domain rdf:resource="#Prefixeable"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:label xml:lang="es">Prefijo</rdfs:label>
-    <rdfs:label xml:lang="en">Prefix</rdfs:label>
-    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</swb:localeable>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_prefix">
+        <rdfs:label xml:lang="en">Prefix</rdfs:label>
+        <rdfs:label xml:lang="es">Prefijo</rdfs:label>
         <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >11</swb:index>
-        <rdfs:label xml:lang="es">Prefijo</rdfs:label>
-        <rdfs:label xml:lang="en">Prefix</rdfs:label>
-      </swbxf:DisplayProperty>
-    </swb:displayProperty>
-  </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="methodVerification">
-    <rdfs:domain rdf:resource="#Indicator"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <swb:displayProperty>
-      <swbxf:DisplayProperty rdf:ID="dp_methodVerification">
-        <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-        >27</swb:index>
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
-        <rdfs:label xml:lang="en">Method of verification</rdfs:label>
-        <rdfs:label xml:lang="es">Método de verificación</rdfs:label>
-      </swbxf:DisplayProperty>
-    </swb:displayProperty>
-  </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="number">
-    <rdfs:domain rdf:resource="#Numerable"/>
-    <swb:displayProperty>
-      <swbxf:DisplayProperty rdf:ID="dp_number">
-        <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-        >10</swb:index>
-        <rdfs:label xml:lang="es">Número</rdfs:label>
-        <rdfs:label xml:lang="en">Number</rdfs:label>
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
     <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:localeable>
+    <rdfs:label xml:lang="en">Prefix</rdfs:label>
+    <rdfs:label xml:lang="es">Prefijo</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:label xml:lang="es">Número</rdfs:label>
-    <rdfs:label xml:lang="en">Number</rdfs:label>
+    <rdfs:domain rdf:resource="#Prefixeable"/>
   </owl:DatatypeProperty>
-  <swbxf:DisplayProperty rdf:ID="dp_file">
-    <rdfs:label xml:lang="en">File</rdfs:label>
-    <rdfs:label xml:lang="es">Archivo</rdfs:label>
-    <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >27</swb:index>
-  </swbxf:DisplayProperty>
-  <swbxf:DisplayProperty rdf:ID="dp_refRepository"/>
-  <swb:CodePackage rdf:ID="pkg">
-    <swb:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >swpdoc</swb:prefix>
-    <swb:package rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >org.semanticwb.process.documentation.model</swb:package>
-  </swb:CodePackage>
-  <swb:Class rdf:ID="Risk">
+  <owl:DatatypeProperty rdf:ID="methodVerification">
+    <swb:displayProperty>
+      <swbxf:DisplayProperty rdf:ID="dp_methodVerification">
+        <rdfs:label xml:lang="es">Método de verificación</rdfs:label>
+        <rdfs:label xml:lang="en">Method of verification</rdfs:label>
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
+        <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >27</swb:index>
+      </swbxf:DisplayProperty>
+    </swb:displayProperty>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Indicator"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="number">
+    <rdfs:label xml:lang="en">Number</rdfs:label>
+    <rdfs:label xml:lang="es">Número</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <swb:localeable rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:localeable>
+    <swb:displayProperty>
+      <swbxf:DisplayProperty rdf:ID="dp_number">
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
+        <rdfs:label xml:lang="en">Number</rdfs:label>
+        <rdfs:label xml:lang="es">Número</rdfs:label>
+        <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >10</swb:index>
+      </swbxf:DisplayProperty>
+    </swb:displayProperty>
+    <rdfs:domain rdf:resource="#Numerable"/>
+  </owl:DatatypeProperty>
+  <swb:Class rdf:ID="Model">
     <rdfs:subClassOf rdf:resource="#SectionElement"/>
-    <rdfs:label xml:lang="en">Risk</rdfs:label>
-    <rdfs:label xml:lang="es">Riesgo</rdfs:label>
+    <rdfs:label xml:lang="en">Model of process</rdfs:label>
     <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:autogenId>
-    <rdfs:subClassOf rdf:resource="#Instantiable"/>
+    <rdfs:label xml:lang="es">Modelo del proceso</rdfs:label>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </swb:Class>
-  <swbxf:DisplayProperty rdf:ID="dp_linkFile">
-    <rdfs:label xml:lang="es">Liga de archivo</rdfs:label>
-    <rdfs:label xml:lang="en">Link file</rdfs:label>
+  <swbxf:DisplayProperty rdf:ID="dp_file">
     <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >28</swb:index>
+    >27</swb:index>
+    <rdfs:label xml:lang="es">Archivo</rdfs:label>
+    <rdfs:label xml:lang="en">File</rdfs:label>
   </swbxf:DisplayProperty>
-  <swb:Class rdf:ID="Policy">
+  <swbxf:DisplayProperty rdf:ID="dp_refRepository"/>
+  <swb:Class rdf:ID="BusinessRole">
     <rdfs:subClassOf rdf:resource="#Instantiable"/>
-    <rdfs:subClassOf rdf:resource="#SectionElement"/>
-    <rdfs:label xml:lang="es">Política</rdfs:label>
-    <rdfs:label xml:lang="en">Policy</rdfs:label>
-    <rdfs:subClassOf rdf:resource="#Numerable"/>
     <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swb:autogenId>
-    <rdfs:subClassOf rdf:resource="#Prefixeable"/>
+    <rdfs:label xml:lang="es">Rol</rdfs:label>
+    <rdfs:label xml:lang="en">Role</rdfs:label>
+    <swb:classCodeName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Role</swb:classCodeName>
+    <rdfs:subClassOf rdf:resource="#SectionElement"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </swb:Class>
+  <swb:CodePackage rdf:ID="pkg">
+    <swb:package rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >org.semanticwb.process.documentation.model</swb:package>
+    <swb:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >swpdoc</swb:prefix>
+  </swb:CodePackage>
+  <swbxf:DisplayProperty rdf:ID="dp_linkFile">
+    <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >28</swb:index>
+    <rdfs:label xml:lang="en">Link file</rdfs:label>
+    <rdfs:label xml:lang="es">Liga de archivo</rdfs:label>
+  </swbxf:DisplayProperty>
+  <swb:Class rdf:ID="Objetive">
+    <rdfs:label xml:lang="en">Objetive</rdfs:label>
+    <rdfs:label xml:lang="es">Objetivo</rdfs:label>
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdfs:subClassOf rdf:resource="#SectionElement"/>
+    <rdfs:subClassOf rdf:resource="#Instantiable"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </swb:Class>
 </rdf:RDF>
