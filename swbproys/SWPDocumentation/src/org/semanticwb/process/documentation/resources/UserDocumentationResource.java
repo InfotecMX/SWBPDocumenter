@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.semanticwb.Logger;
 import org.semanticwb.SWBUtils;
 import org.semanticwb.model.Role;
+import org.semanticwb.model.SWBComparator;
 import org.semanticwb.process.documentation.model.DocumentationInstance;
 import org.semanticwb.model.User;
 import org.semanticwb.model.WebSite;
@@ -102,15 +103,15 @@ public class UserDocumentationResource extends GenericAdmResource {
         ArrayList<Process> unpaged = new ArrayList();
         int page = 1;
         int itemsPerPage = 10;
-        boolean isDocumenter = false;
+        //boolean isDocumenter = false;
         
-        Role docRole = site.getUserRepository().getRole(getResourceBase().getAttribute("docRole"));
+        /*Role docRole = site.getUserRepository().getRole(getResourceBase().getAttribute("docRole"));
         Role adminRole = site.getUserRepository().getRole(getResourceBase().getAttribute("admin"));
         if (user.hasRole(docRole) || user.hasRole(adminRole)) {
             isDocumenter = true;
-        }
+        }*/
 
-        Iterator<StartEvent> startEvents = StartEvent.ClassMgr.listStartEvents(site);
+        /*Iterator<StartEvent> startEvents = StartEvent.ClassMgr.listStartEvents(site);
         while (startEvents.hasNext()) {
             StartEvent sevt = startEvents.next();
             if (sevt.getProcess() != null && sevt.getContainer() != null && sevt.getContainer() instanceof Process && (user.haveAccess(sevt) || isDocumenter)) {
@@ -122,6 +123,14 @@ public class UserDocumentationResource extends GenericAdmResource {
                         }
                     }
                 }
+            }
+        }*/
+        
+        Iterator<Process> processes = SWBComparator.sortByDisplayName(Process.ClassMgr.listProcesses(site),user.getLanguage()!=null?user.getLanguage():"es");
+        while (processes.hasNext()) {
+            Process process = processes.next();
+            if (process.isValid() && !unpaged.contains(process)) {
+                unpaged.add(process);
             }
         }
 
