@@ -7,6 +7,7 @@
             <input type="TEXT" name="templatePage" label="ID de la página de administración de plantillas:"/>
             <input type="TEXT" name="contentPage" label="ID de la página de captura de documentación:"/>
             <input type="TEXT" name="docRole" label="ID del rol de documentador:"/>
+            <input type="TEXT" name="itemsPerPage" label="Elementos a mostrar por página:"/>
         </fieldset>
         <fieldset>
             <input type="submit" name="btnSave" id="btnSave" value="Guardar" />
