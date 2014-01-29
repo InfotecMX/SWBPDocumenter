@@ -38,6 +38,7 @@ import org.semanticwb.portal.api.GenericAdmResource;
 import org.semanticwb.portal.api.SWBActionResponse;
 import org.semanticwb.portal.api.SWBParamRequest;
 import org.semanticwb.portal.api.SWBResourceException;
+import org.semanticwb.process.documentation.model.DocumentSection;
 import org.semanticwb.process.model.GraphicalElement;
 import org.semanticwb.process.model.ProcessElement;
 import org.semanticwb.process.model.ProcessSite;
@@ -645,6 +646,24 @@ public class DocumentationResource extends GenericAdmResource {
             int ret = 0;
             GraphicalElement ge1 = ((Activity) t1).getActivityRef().getProcessActivity();
             it1 = ge1.getIndex();
+            if (it > it1) {
+                ret = 1;
+            } else {
+                ret = -1;
+            }
+            return ret;
+        }
+    };
+    public static Comparator typeSectionComparator = new Comparator() {
+        @Override
+        public int compare(Object t, Object t1) {
+            int it = 0;
+            int it1 = 0;
+            DocumentSection ds = ((DocumentSectionInstance) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(t.toString())).getSecTypeDefinition();
+            it = ds.getIndex();
+            int ret = 0;
+            DocumentSection ds1 = ((DocumentSectionInstance) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(t1.toString())).getSecTypeDefinition();
+            it1 = ds1.getIndex();
             if (it > it1) {
                 ret = 1;
             } else {
