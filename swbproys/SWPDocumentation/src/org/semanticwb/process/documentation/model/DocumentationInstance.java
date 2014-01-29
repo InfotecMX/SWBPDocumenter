@@ -62,6 +62,7 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
                         actFin.setTitle(act.getTitle());
                         actFin.setDescription(act.getDescription());
                         actFin.setActivityRef(actRef);
+                        actFin.setIndex(ge.getIndex());
                         dsi.addDocuSectionElementInstance(actFin);
                         actFin.setParentSection(ds);
                     }
@@ -97,12 +98,14 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
                             if (ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof UserTask) {
                                 String urige = ge.getURI();
                                 org.semanticwb.process.model.Activity act = (org.semanticwb.process.model.Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urige);
+
                                 ActivityRef actRef = ActivityRef.ClassMgr.createActivityRef(model);
                                 actRef.setProcessActivity(act);
                                 Activity actFin = Activity.ClassMgr.createActivity(model);
                                 actFin.setTitle(act.getTitle());
                                 actFin.setDescription(act.getDescription());
                                 actFin.setActivityRef(actRef);
+                                actFin.setIndex(ge.getIndex());
                                 dsin.addDocuSectionElementInstance(actFin);
                             }
                         }
@@ -118,10 +121,10 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
     }
 
     public static ArrayList listDocumentSectionsForPE(DocumentTemplate dt, Map map, DocumentationInstance di, ProcessSite model, String clsuri) {
-        Iterator<DocumentSection> itdst = SWBComparator.sortSemanticObjects(dt.listDocumentSections());
+        Iterator<DocumentSection> itdst = SWBComparator.sortSortableObject(dt.listDocumentSections());
         ArrayList arr = new ArrayList();
         int i = 0;
-        Iterator<DocumentSectionInstance> itdsi = di.listDocumnetSectionInstances();
+        Iterator<DocumentSectionInstance> itdsi = SWBComparator.sortSortableObject(di.listDocumnetSectionInstances());
         while (itdsi.hasNext()) {
             DocumentSectionInstance dsi = itdsi.next();
             SemanticClass semcls = SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass(dsi.getSecTypeDefinition().getSectionType().getURI());
