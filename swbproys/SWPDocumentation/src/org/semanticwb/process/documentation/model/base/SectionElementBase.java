@@ -1,7 +1,7 @@
 package org.semanticwb.process.documentation.model.base;
 
 
-public abstract class SectionElementBase extends org.semanticwb.model.SWBClass implements org.semanticwb.model.Traceable,org.semanticwb.model.Descriptiveable
+public abstract class SectionElementBase extends org.semanticwb.model.SWBClass implements org.semanticwb.model.Descriptiveable,org.semanticwb.model.Traceable,org.semanticwb.model.Sortable
 {
     public static final org.semanticwb.platform.SemanticClass swpdoc_DocumentSection=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass("http://www.semanticwebbuilder.org/resources/documentation#DocumentSection");
     public static final org.semanticwb.platform.SemanticProperty swpdoc_parentSection=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticProperty("http://www.semanticwebbuilder.org/resources/documentation#parentSection");
@@ -327,6 +327,24 @@ public abstract class SectionElementBase extends org.semanticwb.model.SWBClass i
     public void setDescription(String description, String lang)
     {
         getSemanticObject().setProperty(swb_description, description, lang);
+    }
+
+/**
+* Gets the Index property
+* @return int with the Index
+*/
+    public int getIndex()
+    {
+        return getSemanticObject().getIntProperty(swb_index);
+    }
+
+/**
+* Sets the Index property
+* @param value long with the Index
+*/
+    public void setIndex(int value)
+    {
+        getSemanticObject().setIntProperty(swb_index, value);
     }
    /**
    * Gets all the org.semanticwb.process.model.ProcessElement
