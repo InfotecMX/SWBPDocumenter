@@ -3,6 +3,7 @@ package org.semanticwb.process.documentation.resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.semanticwb.process.documentation.model.SectionElement;
 import org.semanticwb.process.documentation.model.SectionElementRef;
 import org.semanticwb.model.FormValidateException;
 import org.semanticwb.model.SWBComparator;
+import org.semanticwb.model.Sortable;
 import org.semanticwb.platform.SemanticClass;
 import org.semanticwb.platform.SemanticObject;
 import org.semanticwb.platform.SemanticProperty;
@@ -36,6 +38,7 @@ import org.semanticwb.portal.api.GenericAdmResource;
 import org.semanticwb.portal.api.SWBActionResponse;
 import org.semanticwb.portal.api.SWBParamRequest;
 import org.semanticwb.portal.api.SWBResourceException;
+import org.semanticwb.process.model.GraphicalElement;
 import org.semanticwb.process.model.ProcessElement;
 import org.semanticwb.process.model.ProcessSite;
 import org.semanticwb.process.model.RepositoryDirectory;
@@ -43,6 +46,7 @@ import org.semanticwb.process.model.RepositoryFile;
 
 /**
  * Recurso que gestiona la vista de la documentación de procesos.
+ *
  * @author carlos.alvarez
  */
 public class DocumentationResource extends GenericAdmResource {
@@ -114,18 +118,23 @@ public class DocumentationResource extends GenericAdmResource {
                 Iterator<SemanticProperty> itsp = cls.listProperties();
                 while (itsp.hasNext()) {
                     SemanticProperty sp = itsp.next();
-                    if (sp.getDisplayProperty() != null) {
+                    if (sp.getDisplayProperty() != null && !sp.getPropId().equals(Sortable.swb_index.getPropId())) {
                         forMgr.addProperty(sp);
                     }
-                }
-                itsp = forMgr.getProperties().iterator();
-                while (itsp.hasNext()) {
-                    SemanticProperty sp = itsp.next();
-                    forMgr.addProperty(sp);
                 }
                 try {
                     SemanticObject semobj = forMgr.processForm(request);
                     SectionElement se = (SectionElement) semobj.createGenericInstance();
+                    String index = request.getParameter("index") != null ? request.getParameter("index") : "";
+                    if (!index.equals("")) {
+                        try {
+                            se.setIndex(Integer.parseInt(index));
+                        } catch (NumberFormatException ex) {
+                            se.setIndex(0);
+                        }
+                    } else {
+                        se.setIndex(0);
+                    }
                     se.setParentSection(dsi.getSecTypeDefinition());
                     dsi.addDocuSectionElementInstance(se);
                 } catch (FormValidateException ex) {
@@ -151,6 +160,7 @@ public class DocumentationResource extends GenericAdmResource {
             String typeReference = "";
             String number = "";
             String prefix = "";
+            String index = "";
             long size = 0;
             if (ServletFileUpload.isMultipartContent(request)) {
                 try {
@@ -194,6 +204,9 @@ public class DocumentationResource extends GenericAdmResource {
                             if (item.getFieldName().equals("scls")) {
                                 scls = item.getString();
                             }
+                            if (item.getFieldName().equals("index")) {
+                                index = item.getString();
+                            }
                             if (item.getFieldName().equals("uridsi")) {
                                 uridsi = item.getString();
                                 dsi = (DocumentSectionInstance) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(uridsi);
@@ -212,6 +225,15 @@ public class DocumentationResource extends GenericAdmResource {
                             format.setDocumentType(documentType);
                             format.setKeyWords(keyWords);
                             format.setRelatedSubjects(relatedSubjects);
+                            if (!index.equals("")) {
+                                try {
+                                    format.setIndex(Integer.parseInt(index));
+                                } catch (NumberFormatException ex) {
+                                    format.setIndex(0);
+                                }
+                            } else {
+                                format.setIndex(0);
+                            }
                             dsi.addDocuSectionElementInstance(format);
                             format.setParentSection(dsi.getSecTypeDefinition());
                             RepositoryDirectory rd = (RepositoryDirectory) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(dsi.getSecTypeDefinition().getConfigData());
@@ -232,6 +254,15 @@ public class DocumentationResource extends GenericAdmResource {
                             reference.setTitle(title);
                             reference.setPrefix(prefix);
                             reference.setDescription(description);
+                            if (!index.equals("")) {
+                                try {
+                                    reference.setIndex(Integer.parseInt(index));
+                                } catch (NumberFormatException ex) {
+                                    reference.setIndex(0);
+                                }
+                            } else {
+                                reference.setIndex(0);
+                            }
                             dsi.addDocuSectionElementInstance(reference);
                             reference.setParentSection(dsi.getSecTypeDefinition());
                             RepositoryDirectory rd = (RepositoryDirectory) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(dsi.getSecTypeDefinition().getConfigData());
@@ -250,6 +281,15 @@ public class DocumentationResource extends GenericAdmResource {
                             definition.setPrefix(prefix);
                             definition.setTitle(title);
                             definition.setDescription(description);
+                            if (!index.equals("")) {
+                                try {
+                                    definition.setIndex(Integer.parseInt(index));
+                                } catch (NumberFormatException ex) {
+                                    definition.setIndex(0);
+                                }
+                            } else {
+                                definition.setIndex(0);
+                            }
                             dsi.addDocuSectionElementInstance(definition);
                             definition.setParentSection(dsi.getSecTypeDefinition());
                             RepositoryDirectory rd = (RepositoryDirectory) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(dsi.getSecTypeDefinition().getConfigData());
@@ -325,17 +365,22 @@ public class DocumentationResource extends GenericAdmResource {
                 Iterator<SemanticProperty> itsp = cls.listProperties();
                 while (itsp.hasNext()) {
                     SemanticProperty sp = itsp.next();
-                    if (sp.getDisplayProperty() != null) {
+                    if (sp.getDisplayProperty() != null && !sp.getPropId().equals(Sortable.swb_index.getPropId())) {
                         forMgr.addProperty(sp);
                     }
                 }
-                itsp = forMgr.getProperties().iterator();
-                while (itsp.hasNext()) {
-                    SemanticProperty sp = itsp.next();
-                    forMgr.addProperty(sp);
-                }
                 try {
-                    forMgr.processForm(request);
+                    SemanticObject semobj = forMgr.processForm(request);
+                    SectionElement se = (SectionElement) semobj.createGenericInstance();
+                    String index = request.getParameter("index") != null ? request.getParameter("index") : "";
+                    if (!index.equals("")) {
+                        try {
+                            se.setIndex(Integer.parseInt(index));
+                        } catch (NumberFormatException ex) {
+                        }
+                    } else {
+                        se.setIndex(0);
+                    }
                 } catch (FormValidateException ex) {
                     log.error("Error on processAction, " + action, ex);
                 }
@@ -358,6 +403,7 @@ public class DocumentationResource extends GenericAdmResource {
             String typeReference = "";
             String number = "";
             String prefix = "";
+            String index = "";
             if (ServletFileUpload.isMultipartContent(request)) {
                 try {
                     List<FileItem> multiparts = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
@@ -399,6 +445,9 @@ public class DocumentationResource extends GenericAdmResource {
                             if (item.getFieldName().equals("urisei")) {
                                 urisei = item.getString();
                             }
+                            if (item.getFieldName().equals("index")) {
+                                index = item.getString();
+                            }
                             if (item.getFieldName().equals("uridsi")) {
                                 uridsi = item.getString();
                                 dsi = (DocumentSectionInstance) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(uridsi);
@@ -415,6 +464,14 @@ public class DocumentationResource extends GenericAdmResource {
                             format.setDescription(description);
                             format.setDocumentType(documentType);
                             format.setKeyWords(keyWords);
+                            if (!index.equals("")) {
+                                try {
+                                    format.setIndex(Integer.parseInt(index));
+                                } catch (NumberFormatException ex) {
+                                }
+                            } else {
+                                format.setIndex(0);
+                            }
                             format.setRelatedSubjects(relatedSubjects);
                             if (format.getRefRepository() != null) {
                                 urirf = format.getRefRepository().getURI();
@@ -428,6 +485,14 @@ public class DocumentationResource extends GenericAdmResource {
                             reference.setTitle(title);
                             reference.setPrefix(prefix);
                             reference.setDescription(description);
+                            if (!index.equals("")) {
+                                try {
+                                    reference.setIndex(Integer.parseInt(index));
+                                } catch (NumberFormatException ex) {
+                                }
+                            } else {
+                                reference.setIndex(0);
+                            }
                             if (reference.getRefRepository() != null) {
                                 urirf = reference.getRefRepository().getURI();
                             }
@@ -439,6 +504,14 @@ public class DocumentationResource extends GenericAdmResource {
                             definition.setPrefix(prefix);
                             definition.setTitle(title);
                             definition.setDescription(description);
+                            if (!index.equals("")) {
+                                try {
+                                    definition.setIndex(Integer.parseInt(index));
+                                } catch (NumberFormatException ex) {
+                                }
+                            } else {
+                                definition.setIndex(0);
+                            }
                             if (definition.getRefRepository() != null) {
                                 urirf = definition.getRefRepository().getURI();
                             }
@@ -466,7 +539,7 @@ public class DocumentationResource extends GenericAdmResource {
             if (sei != null && dsi != null) {
                 dsi.removeDocuSectionElementInstance(sei);
                 Iterator<SectionElementRef> itser = SectionElementRef.ClassMgr.listSectionElementRefBySectionElement(sei);
-                while(itser.hasNext()){
+                while (itser.hasNext()) {
                     SectionElementRef ser = itser.next();
                     ser.remove();
                 }
@@ -499,7 +572,7 @@ public class DocumentationResource extends GenericAdmResource {
         response.setContentType("text/html; charset=UTF-8");
         String suri = request.getParameter("suri");
         String path = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/documentationEdit.jsp";
-        
+
         RequestDispatcher rd = request.getRequestDispatcher(path);
         try {
             request.setAttribute("paramRequest", paramRequest);
@@ -522,7 +595,7 @@ public class DocumentationResource extends GenericAdmResource {
         response.setContentType("text/html; charset=UTF-8");
         String suri = request.getParameter("suri");
         String path = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/documentationEdit.jsp";
-        
+
         RequestDispatcher rd = request.getRequestDispatcher(path);
         try {
             request.setAttribute("paramRequest", paramRequest);
@@ -547,7 +620,7 @@ public class DocumentationResource extends GenericAdmResource {
         response.setContentType("text/html; charset=UTF-8");
         String suri = request.getParameter("suri");
         String path = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/logView.jsp";
-        
+
         RequestDispatcher rd = request.getRequestDispatcher(path);
         try {
             request.setAttribute("paramRequest", paramRequest);
@@ -562,4 +635,22 @@ public class DocumentationResource extends GenericAdmResource {
             log.error("Error on doViewLog, " + path, ex);
         }
     }
+    public static Comparator activityComparator = new Comparator() {
+        @Override
+        public int compare(Object t, Object t1) {
+            int it = 0;
+            int it1 = 0;
+            GraphicalElement ge = ((Activity) t).getActivityRef().getProcessActivity();
+            it = ge.getIndex();
+            int ret = 0;
+            GraphicalElement ge1 = ((Activity) t1).getActivityRef().getProcessActivity();
+            it1 = ge1.getIndex();
+            if (it > it1) {
+                ret = 1;
+            } else {
+                ret = -1;
+            }
+            return ret;
+        }
+    };
 }
