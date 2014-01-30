@@ -55,7 +55,6 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
                     if (ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof UserTask) {
                         String urige = ge.getURI();
                         org.semanticwb.process.model.Activity act = (org.semanticwb.process.model.Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urige);
-                        //System.out.println("act: " + act);
                         ActivityRef actRef = ActivityRef.ClassMgr.createActivityRef(model);
                         actRef.setProcessActivity(act);
                         Activity actFin = Activity.ClassMgr.createActivity(model);
