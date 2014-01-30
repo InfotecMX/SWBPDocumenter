@@ -2,6 +2,7 @@ package org.semanticwb.process.documentation.resources;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
@@ -9,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.semanticwb.Logger;
+import org.semanticwb.SWBPlatform;
 import org.semanticwb.SWBUtils;
 import org.semanticwb.model.SWBComparator;
 import org.semanticwb.model.User;
@@ -17,6 +19,9 @@ import org.semanticwb.portal.api.GenericAdmResource;
 import org.semanticwb.portal.api.SWBActionResponse;
 import org.semanticwb.portal.api.SWBParamRequest;
 import org.semanticwb.portal.api.SWBResourceException;
+import org.semanticwb.process.documentation.model.DocumentSection;
+import org.semanticwb.process.documentation.model.SectionElement;
+import org.semanticwb.process.documentation.model.SectionElementRef;
 import org.semanticwb.process.model.Process;
 
 /**
@@ -179,4 +184,22 @@ public class UserDocumentationResource extends GenericAdmResource {
 
         return ret;
     }
+        public static Comparator sectionElementComparator = new Comparator() {
+        @Override
+        public int compare(Object t, Object t1) {
+            int it = 0;
+            int it1 = 0;
+            SectionElement ds = ((SectionElementRef) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(t.toString())).getSectionElement();
+            it = ds.getIndex();
+            int ret = 0;
+            SectionElement ds1 = ((SectionElementRef) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(t1.toString())).getSectionElement();
+            it1 = ds1.getIndex();
+            if (it > it1) {
+                ret = 1;
+            } else {
+                ret = -1;
+            }
+            return ret;
+        }
+    };
 }
