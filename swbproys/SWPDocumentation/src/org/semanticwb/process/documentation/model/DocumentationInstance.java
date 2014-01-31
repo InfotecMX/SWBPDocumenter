@@ -3,9 +3,11 @@ package org.semanticwb.process.documentation.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.semanticwb.SWBPlatform;
 import org.semanticwb.model.SWBComparator;
+import org.semanticwb.model.WebSite;
 import org.semanticwb.platform.SemanticClass;
 import org.semanticwb.process.model.GraphicalElement;
 import org.semanticwb.process.model.ProcessSite;
@@ -140,5 +142,27 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
             }
         }
         return arr;
+    }
+
+    public static void verifyActivitiesOfProcess(List<GraphicalElement> list, WebSite model, DocumentSectionInstance dsi, org.semanticwb.process.model.Process process) {
+        Iterator<GraphicalElement> itge = process.listAllContaineds();
+        while (itge.hasNext()) {
+            GraphicalElement ge = itge.next();
+            if ((ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof UserTask)) {
+                if (!list.contains(ge)) {
+                    String urige = ge.getURI();
+                    org.semanticwb.process.model.Activity act = (org.semanticwb.process.model.Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urige);
+                    ActivityRef actRef = ActivityRef.ClassMgr.createActivityRef(model);
+                    actRef.setProcessActivity(act);
+                    Activity actFin = Activity.ClassMgr.createActivity(model);
+                    actFin.setTitle(act.getTitle());
+                    actFin.setDescription(act.getDescription());
+                    actFin.setActivityRef(actRef);
+                    actFin.setIndex(ge.getIndex());
+                    dsi.addDocuSectionElementInstance(actFin);
+                    actFin.setParentSection(dsi.getSecTypeDefinition());
+                }
+            }
+        }
     }
 }
