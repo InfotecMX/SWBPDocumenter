@@ -1,7 +1,7 @@
 package org.semanticwb.process.documentation.model.base;
 
 
-public abstract class ActivityBase extends org.semanticwb.process.documentation.model.SectionElement implements org.semanticwb.model.Descriptiveable,org.semanticwb.model.Traceable,org.semanticwb.model.Sortable
+public abstract class ActivityBase extends org.semanticwb.process.documentation.model.SectionElement implements org.semanticwb.model.Descriptiveable,org.semanticwb.model.Sortable,org.semanticwb.model.Traceable
 {
     public static final org.semanticwb.platform.SemanticClass swpdoc_ActivityRef=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass("http://www.semanticwebbuilder.org/resources/documentation#ActivityRef");
     public static final org.semanticwb.platform.SemanticProperty swpdoc_activityRef=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticProperty("http://www.semanticwebbuilder.org/resources/documentation#activityRef");
