@@ -51,6 +51,14 @@
     <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBInterface"/>
     <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Interface"/>
   </owl:Class>
+  <owl:Class rdf:ID="Documentation">
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#SWBClass"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
+    <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swb:autogenId>
+    <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Descriptiveable"/>
+    <rdf:type rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Class"/>
+  </owl:Class>
   <owl:Class rdf:ID="DocumentationInstance">
     <rdfs:subClassOf rdf:resource="http://www.semanticwebbuilder.org/swb4/ontology#Traceable"/>
     <swb:autogenId rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -199,14 +207,18 @@
     <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#ProcessElement"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasDocumentSection">
-    <rdfs:domain rdf:resource="#DocumentTemplate"/>
     <swb:removeDependency rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</swb:removeDependency>
+    >false</swb:removeDependency>
+    <rdfs:domain rdf:resource="#DocumentTemplate"/>
     <rdfs:range rdf:resource="#DocumentSection"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="processActivity">
     <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#Activity"/>
     <rdfs:domain rdf:resource="#ActivityRef"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="process">
+    <rdfs:domain rdf:resource="#Documentation"/>
+    <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#Process"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="processType">
     <rdfs:range rdf:resource="http://www.semanticwebbuilder.org/swb4/process#Process"/>
@@ -300,6 +312,10 @@
     </swb:displayProperty>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:domain rdf:resource="#Indicator"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="nameVersion">
+    <rdfs:domain rdf:resource="#Documentation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="informationSource">
     <swb:displayProperty>
@@ -439,6 +455,10 @@
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:domain rdf:resource="#Indicator"/>
   </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="actualVersion">
+    <rdfs:domain rdf:resource="#Documentation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="clasification">
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_clasification">
@@ -506,11 +526,11 @@
     >true</swb:localeable>
     <swb:displayProperty>
       <swbxf:DisplayProperty rdf:ID="dp_number">
-        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
+        <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >11</swb:index>
         <rdfs:label xml:lang="en">Number</rdfs:label>
         <rdfs:label xml:lang="es">Número</rdfs:label>
-        <swb:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-        >10</swb:index>
+        <swbxf:formElement rdf:resource="http://www.semanticwebbuilder.org/swb4/xforms/ontology#TextBox"/>
       </swbxf:DisplayProperty>
     </swb:displayProperty>
     <rdfs:domain rdf:resource="#Numerable"/>
