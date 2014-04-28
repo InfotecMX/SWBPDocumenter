@@ -1,7 +1,7 @@
 package org.semanticwb.process.documentation.model.base;
 
 
-public abstract class ReferenceBase extends org.semanticwb.process.documentation.model.SectionElement implements org.semanticwb.model.Descriptiveable,org.semanticwb.process.documentation.model.Referable,org.semanticwb.process.documentation.model.Prefixeable,org.semanticwb.model.Traceable,org.semanticwb.model.Sortable,org.semanticwb.process.documentation.model.Instantiable,org.semanticwb.process.documentation.model.Numerable
+public abstract class ReferenceBase extends org.semanticwb.process.documentation.model.SectionElement implements org.semanticwb.model.Descriptiveable,org.semanticwb.process.documentation.model.Referable,org.semanticwb.process.documentation.model.Numerable,org.semanticwb.model.Sortable,org.semanticwb.model.Traceable,org.semanticwb.process.documentation.model.Prefixeable,org.semanticwb.process.documentation.model.Instantiable
 {
     public static final org.semanticwb.platform.SemanticProperty swpdoc_typeReference=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticProperty("http://www.semanticwebbuilder.org/resources/documentation#typeReference");
     public static final org.semanticwb.platform.SemanticClass swpdoc_Reference=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass("http://www.semanticwebbuilder.org/resources/documentation#Reference");
