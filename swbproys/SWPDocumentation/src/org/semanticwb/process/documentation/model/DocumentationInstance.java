@@ -57,6 +57,7 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
                     if (ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof UserTask) {
                         String urige = ge.getURI();
                         org.semanticwb.process.model.Activity act = (org.semanticwb.process.model.Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urige);
+
                         ActivityRef actRef = ActivityRef.ClassMgr.createActivityRef(model);
                         actRef.setProcessActivity(act);
                         Activity actFin = Activity.ClassMgr.createActivity(model);
@@ -79,43 +80,49 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
         int i = 0;
         while (itdst.hasNext()) {
             DocumentSection dst = itdst.next();
-            SemanticClass semcls = SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass(dst.getSectionType().getURI());
-            if (!clsuri.contains(semcls.getClassId())) {
-                if (!map.containsKey(dst.getURI())) {
-                    DocumentSectionInstance dsin = DocumentSectionInstance.ClassMgr.createDocumentSectionInstance(model);
-                    dsin.setSecTypeDefinition(dst);
-                    di.addDocumnetSectionInstance(dsin);
-                    SemanticClass cls = SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass(dsin.getSecTypeDefinition().getSectionType().getURI());
-                    if (FreeText.sclass.getClassId().equals(cls.getClassId())) {
-                        FreeText ft = FreeText.ClassMgr.createFreeText(model);
-                        ft.setText("");
-                        SectionElement se = (SectionElement) ft.getSemanticObject().createGenericInstance();
-                        dsin.addDocuSectionElementInstance(se);
-                    }
-                    if (Activity.sclass.getClassId().equals(cls.getClassId())) {
-                        Iterator<GraphicalElement> itge = di.getProcessRef().listAllContaineds();
-                        while (itge.hasNext()) {
-                            GraphicalElement ge = itge.next();
-                            if (ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof UserTask) {
-                                String urige = ge.getURI();
-                                org.semanticwb.process.model.Activity act = (org.semanticwb.process.model.Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urige);
+            if (dst.isActive()) {
+                SemanticClass semcls = SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass(dst.getSectionType().getURI());
+                if (!clsuri.contains(semcls.getClassId())) {
+                    if (!map.containsKey(dst.getURI())) {
+                        DocumentSectionInstance dsin = DocumentSectionInstance.ClassMgr.createDocumentSectionInstance(model);
+                        dsin.setSecTypeDefinition(dst);
+                        di.addDocumnetSectionInstance(dsin);
+                        SemanticClass cls = SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass(dsin.getSecTypeDefinition().getSectionType().getURI());
+                        if (FreeText.sclass.getClassId().equals(cls.getClassId())) {
+                            FreeText ft = FreeText.ClassMgr.createFreeText(model);
+                            ft.setText("");
+                            SectionElement se = (SectionElement) ft.getSemanticObject().createGenericInstance();
+                            dsin.addDocuSectionElementInstance(se);
+                        }
+                        if (Activity.sclass.getClassId().equals(cls.getClassId())) {
+                            Iterator<GraphicalElement> itge = di.getProcessRef().listAllContaineds();
+                            while (itge.hasNext()) {
+                                GraphicalElement ge = itge.next();
+                                if (ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof UserTask) {
+                                    String urige = ge.getURI();
+                                    org.semanticwb.process.model.Activity act = (org.semanticwb.process.model.Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urige);
 
-                                ActivityRef actRef = ActivityRef.ClassMgr.createActivityRef(model);
-                                actRef.setProcessActivity(act);
-                                Activity actFin = Activity.ClassMgr.createActivity(model);
-                                actFin.setTitle(act.getTitle());
-                                actFin.setDescription(act.getDescription());
-                                actFin.setActivityRef(actRef);
-                                actFin.setIndex(ge.getIndex());
-                                dsin.addDocuSectionElementInstance(actFin);
+//                                if(act.getParent() != null && act.getParent() instanceof SubProcess){
+//                                    System.out.println("activity : " + act + " is child of subprocess : " + act.getParent());
+//                                }
+
+                                    ActivityRef actRef = ActivityRef.ClassMgr.createActivityRef(model);
+                                    actRef.setProcessActivity(act);
+                                    Activity actFin = Activity.ClassMgr.createActivity(model);
+                                    actFin.setTitle(act.getTitle());
+                                    actFin.setDescription(act.getDescription());
+                                    actFin.setActivityRef(actRef);
+                                    actFin.setIndex(ge.getIndex());
+                                    dsin.addDocuSectionElementInstance(actFin);
+                                }
                             }
                         }
+                        arr.add(i, dsin.getURI());
+                    } else {
+                        arr.add(i, map.get(dst.getURI()));
                     }
-                    arr.add(i, dsin.getURI());
-                } else {
-                    arr.add(i, map.get(dst.getURI()));
+                    i++;
                 }
-                i++;
             }
         }
         return arr;
