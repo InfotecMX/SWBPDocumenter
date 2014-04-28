@@ -125,6 +125,7 @@ public class DocumentTemplateResource extends GenericResource {
                         }
                     }
                 }
+                
                 Iterator<DocumentSection> itds = dt.listDocumentSections();
                 while (itds.hasNext()) {
                     DocumentSection ds = itds.next();
@@ -185,6 +186,7 @@ public class DocumentTemplateResource extends GenericResource {
                             formMgr.addProperty(sp);
                         }
                     }
+                    
                     ds.setVisibleProperties("");
                     String newprop = "";
                     itsp = formMgr.getProperties().iterator();
