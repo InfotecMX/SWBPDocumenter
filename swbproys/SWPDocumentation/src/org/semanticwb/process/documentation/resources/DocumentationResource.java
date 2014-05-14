@@ -47,6 +47,8 @@ import org.semanticwb.model.FormValidateException;
 import org.semanticwb.model.Resource;
 import org.semanticwb.model.SWBComparator;
 import org.semanticwb.model.Sortable;
+import org.semanticwb.model.User;
+import org.semanticwb.model.VersionInfo;
 import org.semanticwb.model.WebPage;
 import org.semanticwb.platform.SemanticClass;
 import org.semanticwb.platform.SemanticObject;
@@ -67,7 +69,9 @@ import org.semanticwb.process.model.GraphicalElement;
 import org.semanticwb.process.model.ProcessElement;
 import org.semanticwb.process.model.ProcessSite;
 import org.semanticwb.process.model.RepositoryDirectory;
+import org.semanticwb.process.model.RepositoryElement;
 import org.semanticwb.process.model.RepositoryFile;
+import org.semanticwb.process.model.RepositoryURL;
 import org.semanticwb.process.resources.ProcessFileRepository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -92,6 +96,7 @@ public class DocumentationResource extends GenericAdmResource {
     public final static String EDIT_SECTION_WITH_FILE = "eswf";
     public final static String REMOVE_SECTION_INSTANCE = "rsi";
     public final static String SAVE_FREE_TEXT = "sft";
+    public final static String SAVE_FREE_TEXT_DESCRIPTION = "sftd";
     public final static String VIEW_LOG = "vloc";
 
     @Override
@@ -125,6 +130,8 @@ public class DocumentationResource extends GenericAdmResource {
             doViewLog(request, response, paramRequest);
         } else if (mode.equals(SAVE_VERSION)) {
             doSaveVersion(request, response, paramRequest);
+        } else if (mode.equals(SAVE_FREE_TEXT_DESCRIPTION)) {
+            doEditDescription(request, response, paramRequest);
         } else {
             super.processRequest(request, response, paramRequest);
         }
@@ -143,7 +150,7 @@ public class DocumentationResource extends GenericAdmResource {
             String uridi = request.getParameter("uridi") != null ? request.getParameter("uridi") : "";
             suri = request.getParameter("suri") != null ? request.getParameter("suri") : "";
             String uridsi = "";
-            if (!uridi.equals("")) {
+            if (!suri.equals("")) {
                 DocumentationInstance di = (DocumentationInstance) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(uridi);
                 uridsi = di.getDocumnetSectionInstance().getURI();
                 Iterator<Documentation> itdoc = SWBComparator.sortSortableObject(Documentation.ClassMgr.listDocumentationByProcess(di.getProcessRef()));
@@ -227,6 +234,7 @@ public class DocumentationResource extends GenericAdmResource {
             response.setRenderParameter("sptab", uridsi);
             response.setMode(UPDATE_SURI);
         } else if (action.equals(ADD_SECTION_WITH_FILE)) {
+            String configData = "";
             String uridsi = "";
             String scls = "";
             DocumentSectionInstance dsi = null;
@@ -243,6 +251,8 @@ public class DocumentationResource extends GenericAdmResource {
             String number = "";
             String prefix = "";
             String index = "";
+            String lfile = "";
+            String hftype = "";
             long size = 0;
             if (ServletFileUpload.isMultipartContent(request)) {
                 try {
@@ -289,6 +299,15 @@ public class DocumentationResource extends GenericAdmResource {
                             if (item.getFieldName().equals("index")) {
                                 index = item.getString();
                             }
+                            if (item.getFieldName().equals("hftype")) {
+                                hftype = item.getString();
+                            }
+                            if (item.getFieldName().equals("lfile")) {
+                                lfile = item.getString();
+                            }
+                            if (item.getFieldName().equals("configData")) {
+                                configData = item.getString();
+                            }
                             if (item.getFieldName().equals("uridsi")) {
                                 uridsi = item.getString();
                                 dsi = (DocumentSectionInstance) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(uridsi);
@@ -299,6 +318,7 @@ public class DocumentationResource extends GenericAdmResource {
                         SemanticClass cls = SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass(scls);
                         processElement = (ProcessElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(suri);
                         model = processElement.getProcessSite();
+                        Referable referable = null;
                         //Type Format
                         if (cls.getClassId().equals(Format.sclass.getClassId())) {
                             Format format = Format.ClassMgr.createFormat(model);
@@ -318,17 +338,8 @@ public class DocumentationResource extends GenericAdmResource {
                             }
                             dsi.addDocuSectionElementInstance(format);
                             format.setParentSection(dsi.getSecTypeDefinition());
-                            RepositoryDirectory rd = (RepositoryDirectory) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(dsi.getSecTypeDefinition().getConfigData());
-                            if (rd != null && size > 0) {
-                                RepositoryFile rf = RepositoryFile.ClassMgr.createRepositoryFile(rd.getProcessSite());
-                                format.setRefRepository(rf);
-                                rf.setRepositoryDirectory(rd);
-                                rf.setTitle(!title.trim().equals("") ? title.trim() : name.substring(0, name.lastIndexOf(".")));
-                                rf.storeFile(name, is, null, Boolean.TRUE, null);
-                                rf.setDescription(description);
-                            }
+                            referable = (Referable) format;
                         }
-
                         //Type Reference
                         if (cls.getClassId().equals(Reference.sclass.getClassId())) {
                             Reference reference = Reference.ClassMgr.createReference(model);
@@ -348,15 +359,7 @@ public class DocumentationResource extends GenericAdmResource {
                             }
                             dsi.addDocuSectionElementInstance(reference);
                             reference.setParentSection(dsi.getSecTypeDefinition());
-                            RepositoryDirectory rd = (RepositoryDirectory) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(dsi.getSecTypeDefinition().getConfigData());
-                            if (rd != null && size > 0) {
-                                RepositoryFile rf = RepositoryFile.ClassMgr.createRepositoryFile(rd.getProcessSite());
-                                reference.setRefRepository(rf);
-                                rf.setRepositoryDirectory(rd);
-                                rf.setTitle(!title.trim().equals("") ? title.trim() : name.substring(0, name.lastIndexOf(".")));
-                                rf.storeFile(name, is, null, Boolean.TRUE, null);
-                                rf.setDescription(description);
-                            }
+                            referable = (Referable) reference;
                         }
                         //Type Definition
                         if (cls.getClassId().equals(Definition.sclass.getClassId())) {
@@ -376,14 +379,27 @@ public class DocumentationResource extends GenericAdmResource {
                             }
                             dsi.addDocuSectionElementInstance(definition);
                             definition.setParentSection(dsi.getSecTypeDefinition());
-                            RepositoryDirectory rd = (RepositoryDirectory) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(dsi.getSecTypeDefinition().getConfigData());
-                            if (rd != null && size > 0) {
+                            referable = (Referable) definition;
+                        }
+                        RepositoryDirectory rd = (RepositoryDirectory) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(configData);
+//                            if (rd != null && size > 0) {
+                        if (rd != null) {
+                            if (hftype.equals("file")) {
                                 RepositoryFile rf = RepositoryFile.ClassMgr.createRepositoryFile(rd.getProcessSite());
-                                definition.setRefRepository(rf);
+                                referable.setRefRepository(rf);
                                 rf.setRepositoryDirectory(rd);
                                 rf.setTitle(!title.trim().equals("") ? title.trim() : name.substring(0, name.lastIndexOf(".")));
                                 rf.storeFile(name, is, null, Boolean.TRUE, null);
                                 rf.setDescription(description);
+                            } else { // is url
+                                RepositoryURL repoUrl = RepositoryURL.ClassMgr.createRepositoryURL(rd.getProcessSite());
+                                repoUrl.setRepositoryDirectory(rd);
+                                referable.setRefRepository(repoUrl);
+                                repoUrl.setTitle(!title.trim().equals("") ? title.trim() : name.substring(0, name.lastIndexOf(".")));
+                                repoUrl.setDescription(description);
+                                User usr = response.getUser();
+                                repoUrl.setOwnerUserGroup(usr.getUserGroup());
+                                repoUrl.storeFile(lfile.startsWith("http://") ? lfile : "http://" + lfile, null, Boolean.TRUE, null);
                             }
                         }
                     }
@@ -474,6 +490,8 @@ public class DocumentationResource extends GenericAdmResource {
             response.setRenderParameter("sptab", request.getParameter("uridsi"));
             response.setMode(UPDATE_SURI);
         } else if (action.equals(EDIT_SECTION_WITH_FILE)) {
+            String repElement = "";
+            String configData = "";
             String urisei = "";
             String uridsi = "";
             String scls = "";
@@ -533,6 +551,12 @@ public class DocumentationResource extends GenericAdmResource {
                             if (item.getFieldName().equals("index")) {
                                 index = item.getString();
                             }
+                            if (item.getFieldName().equals("configData")) {
+                                configData = item.getString();
+                            }
+                            if (item.getFieldName().equals("repElement")) {
+                                repElement = item.getString();
+                            }
                             if (item.getFieldName().equals("uridsi")) {
                                 uridsi = item.getString();
                                 dsi = (DocumentSectionInstance) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(uridsi);
@@ -542,6 +566,13 @@ public class DocumentationResource extends GenericAdmResource {
                     if (dsi != null) {
                         String urirf = "";
                         SemanticClass cls = SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass(scls);
+                        Referable ref = (Referable) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urisei);
+                        RepositoryElement repositoryElement = (RepositoryElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(repElement);
+                        RepositoryDirectory rd = (RepositoryDirectory) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(configData);
+                        if (repositoryElement != null && rd != null) {
+                            repositoryElement.setRepositoryDirectory(rd);
+//                            ref.setRefRepository(repositoryElement);
+                        }
                         //Format
                         if (cls.getClassId().equals(Format.sclass.getClassId())) {
                             Format format = (Format) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urisei);
@@ -580,6 +611,7 @@ public class DocumentationResource extends GenericAdmResource {
                             }
                             if (reference.getRefRepository() != null) {
                                 urirf = reference.getRefRepository().getURI();
+
                             }
                         }
                         //Definition
@@ -601,19 +633,20 @@ public class DocumentationResource extends GenericAdmResource {
                                 urirf = definition.getRefRepository().getURI();
                             }
                         }
-                        RepositoryFile rf = (RepositoryFile) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urirf);
+                        RepositoryElement rf = (RepositoryElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urirf);
                         if (rf != null) {
                             rf.setTitle(!title.trim().equals("") ? title.trim() : rf.getTitle());
                             rf.setDescription(description);
                         }
                     }
-                    response.setRenderParameter("suri", suri);
-                    response.setRenderParameter("sptab", uridsi);
-                    response.setMode(UPDATE_SURI);
                 } catch (Exception ex) {
                     log.error("Error on processAction, " + action, ex);
+                    ex.printStackTrace();
                 }
             }
+            response.setRenderParameter("suri", suri);
+            response.setRenderParameter("sptab", uridsi);
+            response.setMode(UPDATE_SURI);
         } else if (action.equals(REMOVE_SECTION_INSTANCE)) {
             suri = request.getParameter("suri") != null ? request.getParameter("suri") : "";
             String urisei = request.getParameter("urisei") != null ? request.getParameter("urisei") : "";
@@ -645,6 +678,18 @@ public class DocumentationResource extends GenericAdmResource {
                 if (ft != null) {
                     ft.setText(data);
                 }
+            }
+            response.setRenderParameter("suri", suri);
+            response.setRenderParameter("sptab", uridsi);
+            response.setMode(UPDATE_SURI);
+        } else if (action.equals(SAVE_FREE_TEXT_DESCRIPTION)) {
+            suri = request.getParameter("suri") != null ? request.getParameter("suri") : "";
+            String uriact = request.getParameter("urift") != null ? request.getParameter("urift") : "";
+            String data = request.getParameter("data") != null ? request.getParameter("data") : "";
+            String uridsi = request.getParameter("uridsi") != null ? request.getParameter("uridsi") : "";
+            Activity activity = (Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(uriact);
+            if (activity != null) {
+                activity.setDescription(data);
             }
             response.setRenderParameter("suri", suri);
             response.setRenderParameter("sptab", uridsi);
@@ -733,6 +778,26 @@ public class DocumentationResource extends GenericAdmResource {
             rd.include(request, response);
         } catch (ServletException ex) {
             log.error("Error on doSaveVersion, " + path, ex);
+        }
+    }
+
+    public void doEditDescription(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramRequest) throws SWBResourceException, IOException {
+        response.setContentType("text/html; charset=UTF-8");
+        String suri = request.getParameter("suri");
+        String path = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/editDescription.jsp";
+
+        RequestDispatcher rd = request.getRequestDispatcher(path);
+        try {
+            request.setAttribute("paramRequest", paramRequest);
+            if (suri != null && suri.length() > 0) {
+                request.setAttribute("suri", suri);
+            }
+            if (request.getParameter("urisei") != null) {
+                request.setAttribute("urisei", request.getParameter("urisei"));
+            }
+            rd.include(request, response);
+        } catch (ServletException ex) {
+            log.error("Error on doEditDescription, " + path, ex);
         }
     }
     public static Comparator activityComparator = new Comparator() {
@@ -824,27 +889,35 @@ public class DocumentationResource extends GenericAdmResource {
                                 SemanticProperty prop = SWBPlatform.getSemanticMgr().getVocabulary().getSemanticPropertyById(propid);
                                 property.setAttribute("propid", propid);
                                 property.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
-                                String value;
+                                String value = "";
                                 if (prop.getPropId().equals(Referable.swpdoc_file.getPropId())) {
                                     Referable referable = (Referable) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(se.getURI());
-                                    RepositoryDirectory repositoryDirectory = referable.getRefRepository().getRepositoryDirectory();
-                                    if (repositoryDirectory != null) {
-                                        Resource resource = null;
-                                        Iterator<Resource> ire = repositoryDirectory.listResources();
-                                        while (ire.hasNext()) {
-                                            resource = ire.next();
-                                            if (resource.getResourceType().getResourceClassName().equals(ProcessFileRepository.class.getName())) {
-                                                break;
+                                    if (referable != null && referable.getRefRepository() != null && referable.getRefRepository().getRepositoryDirectory() != null) {
+                                        RepositoryDirectory repositoryDirectory = referable.getRefRepository().getRepositoryDirectory();
+                                        if (repositoryDirectory != null) {
+                                            Resource resource = null;
+                                            Iterator<Resource> ire = repositoryDirectory.listResources();
+                                            while (ire.hasNext()) {
+                                                resource = ire.next();
+                                                if (resource.getResourceType().getResourceClassName().equals(ProcessFileRepository.class.getName())) {
+                                                    break;
+                                                }
                                             }
-                                        }
-                                        if (resource != null) {
-                                            SWBResourceURL urlDownload = new SWBResourceURLImp(request, resource, (WebPage) repositoryDirectory, SWBResourceModes.UrlType_RENDER);
-                                            urlDownload.setMode(ProcessFileRepository.MODE_GETFILE);
-                                            urlDownload.setCallMethod(SWBResourceURL.Call_DIRECT);
-                                            urlDownload.setParameter("fid", referable.getRefRepository().getId());
-                                            urlDownload.setParameter("verNum", referable.getRefRepository().getLastVersion().getVersionNumber() + "");
-                                            value = "<a href=\"" + urlDownload + "\">" + referable.getRefRepository().getTitle() + " <i class=\"fa fa-download\"></i></a>";
-                                            property.appendChild(document.createTextNode("\n\t\t\t" + value + "\n\t\t\t"));
+                                            if (resource != null) {
+                                                SWBResourceURL urlDownload = new SWBResourceURLImp(request, resource, (WebPage) repositoryDirectory, SWBResourceModes.UrlType_RENDER);
+                                                urlDownload.setMode(ProcessFileRepository.MODE_GETFILE);
+                                                urlDownload.setCallMethod(SWBResourceURL.Call_DIRECT);
+                                                urlDownload.setParameter("fid", referable.getRefRepository().getId());
+                                                urlDownload.setParameter("verNum", referable.getRefRepository().getLastVersion().getVersionNumber() + "");
+                                                RepositoryElement re = (RepositoryElement) referable.getRefRepository();
+                                                VersionInfo vi = re.getLastVersion();
+                                                if (re instanceof RepositoryFile) {
+                                                    value = "<a href=\"" + urlDownload + "\">" + referable.getRefRepository().getTitle() + " <i class=\"fa fa-download\"></i></a>";
+                                                } else if (re instanceof RepositoryURL) {
+                                                    value = "<a target=\"_blank\" href=\"" + vi.getVersionFile() + "\">" + referable.getRefRepository().getTitle() + " <i class=\"fa fa-external-link\"></i></a>";
+                                                }
+                                                property.appendChild(document.createTextNode("\n\t\t\t" + value + "\n\t\t\t"));
+                                            }
                                         }
                                     }
                                 } else {
@@ -897,7 +970,7 @@ public class DocumentationResource extends GenericAdmResource {
                                         + "<div class=\"row\">\n"
                                         + "     <div class=\"col-lg-9 col-md-9 col-sm-9\">\n"
                                         + "         <h4 class=\"list-group-item-heading\">" + act.getActivityRef().getProcessActivity().getTitle() + "</h4>\n"
-                                        + "         <p>" + act.getActivityRef().getProcessActivity().getDescription() + "</p>\n"
+                                        + "         <p>" + act.getDescription() + "</p>\n"
                                         + "     </div>\n"
                                         + "     <div class=\"col-lg-3 col-md-3 col-sm-3\">\n";
                                 if (itser.hasNext()) {
@@ -991,6 +1064,36 @@ public class DocumentationResource extends GenericAdmResource {
                     }
                     section.appendChild(document.createTextNode("\n\t"));
                 } else {
+                    root.appendChild(document.createTextNode("\n\t"));
+                    Element section = document.createElement("section");
+                    section.setAttribute("uri", dsi.getURI());
+                    section.setAttribute("url", scls.getName() + dsi.getId());
+                    section.setAttribute("className", scls.getName());
+                    section.setAttribute("title", dsi.getSecTypeDefinition().getTitle());
+                    root.appendChild(section);
+                    root.appendChild(document.createTextNode("\n\t"));
+
+                    section.appendChild(document.createTextNode("\n\t\t"));
+                    Element instance = document.createElement("instance");
+                    instance.setAttribute("id", dsi.getId());
+                    instance.setAttribute("uri", dsi.getURI());
+                    instance.setAttribute("className", scls.getName());
+                    instance.setAttribute("count", "1");
+                    instance.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
+                    section.appendChild(instance);
+                    instance.appendChild(document.createTextNode("\n\t\t\t"));
+
+                    String mode = paramRequest.getMode();
+
+                    Element property = document.createElement("property");
+                    property.setAttribute("propid", Descriptiveable.swb_title.getPropId());
+                    property.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
+                    property.setAttribute("propid", Model.swb_title.getPropId());
+                    property.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
+                    property.appendChild(document.createTextNode("\n\t\t\t" + getProcessElementModel(process.getData(), suri, mode) + "\n\t\t\t"));
+
+                    instance.appendChild(property);
+                    instance.appendChild(document.createTextNode("\t\t"));
                     hasModel = true;
                 }
             }
@@ -1072,35 +1175,45 @@ public class DocumentationResource extends GenericAdmResource {
                             + "                </div>\n";
                 } else {//Si es archivo
                     Referable referable = (Referable) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(sei.getURI());
-                    RepositoryDirectory rd = referable.getRefRepository().getRepositoryDirectory();
-                    String filename = referable.getRefRepository().getTitle();
-                    String fid = referable.getRefRepository().getId();
-                    String verNum = referable.getRefRepository().getLastVersion().getVersionNumber() + "";
+                    if (referable != null && referable.getRefRepository() != null && referable.getRefRepository().getRepositoryDirectory() != null) {
+                        RepositoryDirectory rd = referable.getRefRepository().getRepositoryDirectory();
+                        String filename = referable.getRefRepository().getTitle();
+                        String fid = referable.getRefRepository().getId();
+                        String verNum = referable.getRefRepository().getLastVersion().getVersionNumber() + "";
 
-                    Resource res = null;
-                    Iterator<Resource> ire = rd.listResources();
-                    while (ire.hasNext()) {
-                        res = ire.next();
-                        if (res.getResourceType().getResourceClassName().equals("org.semanticwb.process.resources.ProcessFileRepository")) {
-                            break;
+                        Resource res = null;
+                        Iterator<Resource> ire = rd.listResources();
+                        while (ire.hasNext()) {
+                            res = ire.next();
+                            if (res.getResourceType().getResourceClassName().equals("org.semanticwb.process.resources.ProcessFileRepository")) {
+                                break;
+                            }
                         }
-                    }
-                    if (res != null) {
-                        SWBResourceURL urlDownload = new SWBResourceURLImp(request, res, (WebPage) rd, SWBResourceModes.UrlType_RENDER);
-                        urlDownload.setMode(ProcessFileRepository.MODE_GETFILE);
-                        urlDownload.setCallMethod(SWBResourceURL.Call_DIRECT);
-                        urlDownload.setParameter("fid", fid);
-                        urlDownload.setParameter("verNum", verNum);
-                        html += "<div class=\"form-group\" id=\"div" + sp.getName() + "\">\n"
-                                + "                    <label for=\"\" class=\"col-lg-4 control-label\">" + titlesp + "</label>\n"
-                                + "                    <div class=\"col-lg-7 input-group\">\n"
-                                + "                        <input type=\"text\" value=\"" + filename + "\" class=\"form-control\" disabled=\"true\">\n"
-                                + "                        <span class=\"input-group-btn\">\n"
-                                + "                            <a class=\"btn btn-default\" href=\"" + urlDownload + "\"><li class=\"fa fa-download\"></li></a>\n"
-                                + "                        </span>\n"
-                                + "\n"
-                                + "                    </div>\n"
-                                + "                </div>  ";
+                        if (res != null) {
+                            SWBResourceURL urlDownload = new SWBResourceURLImp(request, res, (WebPage) rd, SWBResourceModes.UrlType_RENDER);
+                            urlDownload.setMode(ProcessFileRepository.MODE_GETFILE);
+                            urlDownload.setCallMethod(SWBResourceURL.Call_DIRECT);
+                            urlDownload.setParameter("fid", fid);
+                            urlDownload.setParameter("verNum", verNum);
+
+                            RepositoryElement re = (RepositoryElement) referable.getRefRepository();
+                            VersionInfo vi = re.getLastVersion();
+
+                            html += "<div class=\"form-group\" id=\"div" + sp.getName() + "\">\n"
+                                    + "                    <label for=\"\" class=\"col-lg-4 control-label\">" + titlesp + "</label>\n"
+                                    + "                    <div class=\"col-lg-7 input-group\">\n"
+                                    + "                        <input type=\"text\" value=\"" + filename + "\" class=\"form-control\" disabled=\"true\">\n"
+                                    + "                        <span class=\"input-group-btn\">\n";
+                            if (re instanceof RepositoryFile) {
+                                html += "                            <a class=\"btn btn-default\" href=\"" + urlDownload + "\"><li class=\"fa fa-download\"></li></a>\n";
+                            } else if (re instanceof RepositoryURL) {
+                                html += "                            <a target=\"_blank\" class=\"btn btn-default\" href=\"" + vi.getVersionFile() + "\"><li class=\"fa fa-external-link\"></li></a>\n";
+                            }
+                            html += "                        </span>\n"
+                                    + "\n"
+                                    + "                    </div>\n"
+                                    + "                </div>  ";
+                        }
                     }
                 }
             }
@@ -1121,5 +1234,24 @@ public class DocumentationResource extends GenericAdmResource {
 //        out.write(html.getBytes());
 //        out.flush();
 //        out.close();
+    }
+    static List<RepositoryDirectory> list = new ArrayList<RepositoryDirectory>();
+
+    public static List<RepositoryDirectory> listRepositoryDerectoryByParent(WebPage webpage, boolean clear) {
+        if (clear) {
+            list.clear();
+        }
+        Iterator<RepositoryDirectory> it = SWBComparator.sortByCreated(RepositoryDirectory.ClassMgr.listRepositoryDirectoryByParent(webpage), true);
+        while (it.hasNext()) {
+            RepositoryDirectory rep = it.next();
+            Iterator<RepositoryDirectory> itRep = SWBComparator.sortByCreated(RepositoryDirectory.ClassMgr.listRepositoryDirectoryByParent(rep), true);
+            while (itRep.hasNext()) {
+                RepositoryDirectory repDir = itRep.next();
+                list.add(repDir);
+                listRepositoryDerectoryByParent(repDir, false);
+            }
+            list.add(rep);
+        }
+        return list;
     }
 }
