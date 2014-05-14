@@ -56,6 +56,7 @@ import org.semanticwb.process.model.Process;
 import org.semanticwb.process.model.ProcessElement;
 import org.semanticwb.process.model.RepositoryDirectory;
 import org.semanticwb.process.model.SubProcess;
+import static org.semanticwb.process.resources.DocumentationResource.deleteDerectory;
 import org.semanticwb.process.resources.ProcessFileRepository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -72,6 +73,8 @@ public class UserDocumentationResource extends GenericAdmResource {
     public static final String MODE_VIEW_VERSION = "viewver";
     public static final String PARAM_PROCESSID = "suri";
     public static final String MODE_VIEW_INSTANCE = "viewins";
+    public static final String EDIT_VERSION = "editver";
+    public static final String UPDATE_SURI = "updsuri";
 
     @Override
     public void processAction(HttpServletRequest request, SWBActionResponse response) throws SWBResourceException, IOException {
@@ -98,6 +101,50 @@ public class UserDocumentationResource extends GenericAdmResource {
                 }
             }
             response.setRenderParameter("suri", suri);
+        } else if (action.equals(EDIT_VERSION)) {
+            String suri = request.getParameter("suri") != null ? request.getParameter("suri") : "";
+            String uridoc = request.getParameter("uridoc") != null ? request.getParameter("uridoc") : "";
+            String currentVersion = request.getParameter("currentVersion") != null ? request.getParameter("currentVersion") : "";
+            String title = request.getParameter("titlee") != null ? request.getParameter("titlee") : "";
+            String descriptionn = request.getParameter("descriptionn") != null ? request.getParameter("descriptionn") : "";
+
+            Documentation doc = (Documentation) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(uridoc);
+            if (doc != null) {
+                doc.setTitle(title);
+                doc.setDescription(descriptionn);
+                if (!currentVersion.equals("") && !doc.isActualVersion()) {
+                    Iterator<Documentation> itdoc = Documentation.ClassMgr.listDocumentationByProcess((Process) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(suri));
+                    while (itdoc.hasNext()) {
+                        Documentation documentation = itdoc.next();
+                        if (documentation.isActualVersion()) {
+                            documentation.setActualVersion(false);
+                            break;
+                        }
+                    }
+                    doc.setActualVersion(true);
+                }
+                if (currentVersion.equals("") && doc.isActualVersion()) {
+                    doc.setActualVersion(false);
+                }
+            }
+            response.setRenderParameter("suri", suri);
+            response.setMode(UPDATE_SURI);
+        } else if (action.equals(SWBResourceURL.Action_REMOVE)) {
+            String suri = request.getParameter("suri") != null ? request.getParameter("suri") : "";
+            String uridoc = request.getParameter("uridoc") != null ? request.getParameter("uridoc") : "";
+            if (!uridoc.equals("")) {
+                Documentation doc = (Documentation) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(uridoc);
+                if (doc != null) {
+                    String basePath = SWBPortal.getWorkPath() + "/models/" + response.getWebPage().getWebSiteId() + "/Resource/" + doc.getProcess().getId() + "/" + doc.getId() + "/";
+                    File version = new File(basePath);
+                    if (version.exists()) {
+                        deleteDerectory(version);
+                    }
+                    doc.remove();
+                }
+            }
+            response.setRenderParameter("suri", suri);
+            response.setRenderParameter("remove", "true");
         } else {
             super.processAction(request, response); //To change body of generated methods, choose Tools | Templates.
         }
@@ -112,6 +159,12 @@ public class UserDocumentationResource extends GenericAdmResource {
             doViewInst(request, response, paramRequest);
         } else if (mode.equals(MODE_VIEW_VERSION)) {
             doViewVersion(request, response, paramRequest);
+        } else if (mode.equals(SWBResourceURL.Mode_EDIT)) {
+            doEdit(request, response, paramRequest);
+        } else if (mode.equals(SWBResourceURL.Mode_EDIT)) {
+            doEdit(request, response, paramRequest);
+        } else if (mode.equals(UPDATE_SURI)) {
+            doUpdateSuri(request, response, paramRequest);
         } else {
             super.processRequest(request, response, paramRequest); //To change body of generated methods, choose Tools | Templates.
         }
@@ -188,6 +241,21 @@ public class UserDocumentationResource extends GenericAdmResource {
             rd.include(request, response);
         } catch (ServletException ex) {
             log.error("Error on doViewVersion, " + path + ", " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public void doEdit(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramRequest) throws SWBResourceException, IOException {
+        response.setContentType("text/html; charset=UTF-8");
+        String path = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/saveVersion.jsp";
+        RequestDispatcher rd = request.getRequestDispatcher(path);
+        try {
+            request.setAttribute("paramRequest", paramRequest);
+            request.setAttribute("suri", request.getParameter("suri"));
+            request.setAttribute("uridoc", request.getParameter("uridoc"));
+            rd.include(request, response);
+        } catch (ServletException ex) {
+            log.error("Error on doSaveVersion, " + path, ex);
         }
     }
 
@@ -1484,5 +1552,23 @@ public class UserDocumentationResource extends GenericAdmResource {
                 + "             }\n"
                 + "     </script>";
         return model;
+    }
+
+    public static void deleteDerectory(File dir) {
+        File[] files = dir.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            if (file.isDirectory()) {
+                deleteDerectory(file);
+                file.delete();
+            } else {
+                file.delete();
+            }
+        }
+        dir.delete();
+    }
+
+    public void doUpdateSuri(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramRequest) throws SWBResourceException, IOException {
+        response.getWriter().print(request.getParameter("suri"));
     }
 }

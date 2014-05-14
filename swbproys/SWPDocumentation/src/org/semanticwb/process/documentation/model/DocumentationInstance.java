@@ -11,7 +11,7 @@ import org.semanticwb.model.WebSite;
 import org.semanticwb.platform.SemanticClass;
 import org.semanticwb.process.model.GraphicalElement;
 import org.semanticwb.process.model.ProcessSite;
-import org.semanticwb.process.model.UserTask;
+import org.semanticwb.process.model.Task;
 
 public class DocumentationInstance extends org.semanticwb.process.documentation.model.base.DocumentationInstanceBase {
 
@@ -54,7 +54,7 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
                 Iterator<GraphicalElement> itge = di.getProcessRef().listAllContaineds();
                 while (itge.hasNext()) {
                     GraphicalElement ge = itge.next();
-                    if (ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof UserTask) {
+                    if (ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof Task) {
                         String urige = ge.getURI();
                         org.semanticwb.process.model.Activity act = (org.semanticwb.process.model.Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urige);
 
@@ -62,7 +62,7 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
                         actRef.setProcessActivity(act);
                         Activity actFin = Activity.ClassMgr.createActivity(model);
                         actFin.setTitle(act.getTitle());
-                        actFin.setDescription(act.getDescription());
+//                        actFin.setDescription(act.getDescription());
                         actFin.setActivityRef(actRef);
                         actFin.setIndex(ge.getIndex());
                         dsi.addDocuSectionElementInstance(actFin);
@@ -98,7 +98,7 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
                             Iterator<GraphicalElement> itge = di.getProcessRef().listAllContaineds();
                             while (itge.hasNext()) {
                                 GraphicalElement ge = itge.next();
-                                if (ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof UserTask) {
+                                if (ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof Task) {
                                     String urige = ge.getURI();
                                     org.semanticwb.process.model.Activity act = (org.semanticwb.process.model.Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urige);
 
@@ -110,7 +110,7 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
                                     actRef.setProcessActivity(act);
                                     Activity actFin = Activity.ClassMgr.createActivity(model);
                                     actFin.setTitle(act.getTitle());
-                                    actFin.setDescription(act.getDescription());
+//                                    actFin.setDescription(act.getDescription());
                                     actFin.setActivityRef(actRef);
                                     actFin.setIndex(ge.getIndex());
                                     dsin.addDocuSectionElementInstance(actFin);
@@ -155,7 +155,7 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
         Iterator<GraphicalElement> itge = process.listAllContaineds();
         while (itge.hasNext()) {
             GraphicalElement ge = itge.next();
-            if ((ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof UserTask)) {
+            if ((ge instanceof org.semanticwb.process.model.SubProcess || ge instanceof Task)) {
                 if (!list.contains(ge)) {
                     String urige = ge.getURI();
                     org.semanticwb.process.model.Activity act = (org.semanticwb.process.model.Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(urige);
@@ -163,7 +163,7 @@ public class DocumentationInstance extends org.semanticwb.process.documentation.
                     actRef.setProcessActivity(act);
                     Activity actFin = Activity.ClassMgr.createActivity(model);
                     actFin.setTitle(act.getTitle());
-                    actFin.setDescription(act.getDescription());
+//                    actFin.setDescription(act.getDescription());
                     actFin.setActivityRef(actRef);
                     actFin.setIndex(ge.getIndex());
                     dsi.addDocuSectionElementInstance(actFin);
