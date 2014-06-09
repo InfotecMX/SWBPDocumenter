@@ -800,6 +800,7 @@ public class DocumentationResource extends GenericAdmResource {
             log.error("Error on doEditDescription, " + path, ex);
         }
     }
+
     public static Comparator activityComparator = new Comparator() {
         @Override
         public int compare(Object t, Object t1) {
@@ -940,6 +941,7 @@ public class DocumentationResource extends GenericAdmResource {
                                 property.setAttribute("propid", Descriptiveable.swb_title.getPropId());
                                 property.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
                                 Activity act = (Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(se.getURI());
+                                property.setAttribute("id", act.getActivityRef().getProcessActivity().getId());
                                 Iterator<SectionElementRef> itser = SWBComparator.sortSortableObject(act.listSectionElementRefs());
                                 Iterator<SemanticObject> itso = SWBComparator.sortSortableObject(paramRequest.getWebPage().getWebSite().getSemanticModel().listSubjects(SectionElementRef.swpdoc_activity, act.getSemanticObject()));
                                 List<SemanticObject> list = new ArrayList<SemanticObject>();
@@ -967,10 +969,10 @@ public class DocumentationResource extends GenericAdmResource {
                                     list.add(semObj);
                                 }
                                 String value = ""
-                                        + "<div class=\"row\">\n"
+                                        + "<div class=\"row\" id=\"divactivity" + act.getActivityRef().getProcessActivity().getId() + "\">\n"
                                         + "     <div class=\"col-lg-9 col-md-9 col-sm-9\">\n"
                                         + "         <h4 class=\"list-group-item-heading\">" + act.getActivityRef().getProcessActivity().getTitle() + "</h4>\n"
-                                        + "         <p>" + act.getDescription() + "</p>\n"
+                                        + "         <p>" + (act.getDescription() != null ? act.getDescription() : "") + "</p>\n"
                                         + "     </div>\n"
                                         + "     <div class=\"col-lg-3 col-md-3 col-sm-3\">\n";
                                 if (itser.hasNext()) {
@@ -1064,36 +1066,36 @@ public class DocumentationResource extends GenericAdmResource {
                     }
                     section.appendChild(document.createTextNode("\n\t"));
                 } else {
-                    root.appendChild(document.createTextNode("\n\t"));
-                    Element section = document.createElement("section");
-                    section.setAttribute("uri", dsi.getURI());
-                    section.setAttribute("url", scls.getName() + dsi.getId());
-                    section.setAttribute("className", scls.getName());
-                    section.setAttribute("title", dsi.getSecTypeDefinition().getTitle());
-                    root.appendChild(section);
-                    root.appendChild(document.createTextNode("\n\t"));
-
-                    section.appendChild(document.createTextNode("\n\t\t"));
-                    Element instance = document.createElement("instance");
-                    instance.setAttribute("id", dsi.getId());
-                    instance.setAttribute("uri", dsi.getURI());
-                    instance.setAttribute("className", scls.getName());
-                    instance.setAttribute("count", "1");
-                    instance.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
-                    section.appendChild(instance);
-                    instance.appendChild(document.createTextNode("\n\t\t\t"));
-
-                    String mode = paramRequest.getMode();
-
-                    Element property = document.createElement("property");
-                    property.setAttribute("propid", Descriptiveable.swb_title.getPropId());
-                    property.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
-                    property.setAttribute("propid", Model.swb_title.getPropId());
-                    property.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
-                    property.appendChild(document.createTextNode("\n\t\t\t" + getProcessElementModel(process.getData(), suri, mode) + "\n\t\t\t"));
-
-                    instance.appendChild(property);
-                    instance.appendChild(document.createTextNode("\t\t"));
+//                    root.appendChild(document.createTextNode("\n\t"));
+//                    Element section = document.createElement("section");
+//                    section.setAttribute("uri", dsi.getURI());
+//                    section.setAttribute("url", scls.getName() + dsi.getId());
+//                    section.setAttribute("className", scls.getName());
+//                    section.setAttribute("title", dsi.getSecTypeDefinition().getTitle());
+//                    root.appendChild(section);
+//                    root.appendChild(document.createTextNode("\n\t"));
+//
+//                    section.appendChild(document.createTextNode("\n\t\t"));
+//                    Element instance = document.createElement("instance");
+//                    instance.setAttribute("id", dsi.getId());
+//                    instance.setAttribute("uri", dsi.getURI());
+//                    instance.setAttribute("className", scls.getName());
+//                    instance.setAttribute("count", "1");
+//                    instance.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
+//                    section.appendChild(instance);
+//                    instance.appendChild(document.createTextNode("\n\t\t\t"));
+//
+//                    String mode = paramRequest.getMode();
+//
+//                    Element property = document.createElement("property");
+//                    property.setAttribute("propid", Descriptiveable.swb_title.getPropId());
+//                    property.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
+//                    property.setAttribute("propid", Model.swb_title.getPropId());
+//                    property.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
+//                    property.appendChild(document.createTextNode("\n\t\t\t" + getProcessElementModel(process.getData(), suri, mode) + "\n\t\t\t"));
+//
+//                    instance.appendChild(property);
+//                    instance.appendChild(document.createTextNode("\t\t"));
                     hasModel = true;
                 }
             }
