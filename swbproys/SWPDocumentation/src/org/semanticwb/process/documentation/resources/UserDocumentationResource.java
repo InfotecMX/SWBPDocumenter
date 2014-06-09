@@ -1,7 +1,10 @@
 package org.semanticwb.process.documentation.resources;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +24,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.semanticwb.Logger;
 import org.semanticwb.SWBPlatform;
 import org.semanticwb.SWBPortal;
@@ -54,9 +61,9 @@ import org.semanticwb.process.documentation.model.SectionElement;
 import org.semanticwb.process.documentation.model.SectionElementRef;
 import org.semanticwb.process.model.Process;
 import org.semanticwb.process.model.ProcessElement;
+import org.semanticwb.process.model.ProcessGroup;
 import org.semanticwb.process.model.RepositoryDirectory;
 import org.semanticwb.process.model.SubProcess;
-import static org.semanticwb.process.resources.DocumentationResource.deleteDerectory;
 import org.semanticwb.process.resources.ProcessFileRepository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -75,6 +82,10 @@ public class UserDocumentationResource extends GenericAdmResource {
     public static final String MODE_VIEW_INSTANCE = "viewins";
     public static final String EDIT_VERSION = "editver";
     public static final String UPDATE_SURI = "updsuri";
+    public final static String EXPORT_IMAGE = "expimg";
+    static List<String> list = new ArrayList<String>();
+    boolean ischild = false;
+    boolean end = false;
 
     @Override
     public void processAction(HttpServletRequest request, SWBActionResponse response) throws SWBResourceException, IOException {
@@ -165,6 +176,8 @@ public class UserDocumentationResource extends GenericAdmResource {
             doEdit(request, response, paramRequest);
         } else if (mode.equals(UPDATE_SURI)) {
             doUpdateSuri(request, response, paramRequest);
+        } else if (mode.equals(EXPORT_IMAGE)) {
+            doExportImage(request, response, paramRequest);
         } else {
             super.processRequest(request, response, paramRequest); //To change body of generated methods, choose Tools | Templates.
         }
@@ -195,9 +208,6 @@ public class UserDocumentationResource extends GenericAdmResource {
         } catch (ServletException ex) {
             log.error("UserDocumentationResource - problema al incluir userDocumentationView.jsp" + ", " + jsp, ex);
         }
-
-
-
 
         response.setContentType("text/html; charset=UTF-8");
 
@@ -259,6 +269,77 @@ public class UserDocumentationResource extends GenericAdmResource {
         }
     }
 
+    public void doExportImage(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramRequest) throws SWBResourceException, IOException {
+        OutputStream outs = response.getOutputStream();
+        String format = request.getParameter("output_format");
+        String data = request.getParameter("data");
+        String viewBox = request.getParameter("viewBox");
+        String[] values = viewBox != null ? viewBox.split("\\ ") : "0 0 3800 2020".split("\\ ");
+        org.semanticwb.process.model.Process p = (org.semanticwb.process.model.Process) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(request.getParameter("suri"));
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + (p != null ? p.getTitle() : "Proceso") + "." + format + "\"");
+        if ("svg".equalsIgnoreCase(format)) {
+            String svg = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+                    + "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+            svg += data;
+            //Corregir clases en objetos de datos
+            svg = svg.replace("<g id=\"data\" bclass=\"itemaware\" oclass=\"itemaware_o\">", "<g id=\"data\" bclass=\"itemaware\" oclass=\"itemaware_o\" class=\"itemAware\">");
+            svg = svg.replace("<g id=\"dataStore\" bclass=\"itemaware\" oclass=\"itemaware_o\" transform=\"translate(-12,-10)\">", "<g id=\"dataStore\" bclass=\"itemaware\" oclass=\"itemaware_o\" transform=\"translate(-12,-10)\" class=\"itemAware\">");
+//            String vbox = svg.substring(svg.indexOf("viewBox="), svg.indexOf("height="));
+
+//            svg = svg.replace(svg.substring(svg.indexOf("viewBox="), svg.indexOf("height=")), "viewBox=\"0 0 1777 1047\" ");
+            String vbox = "";
+            try {
+                vbox = svg.substring(svg.indexOf("viewBox="), svg.indexOf("height="));
+                svg = svg.replace(svg.substring(svg.indexOf("viewBox="), svg.indexOf("height=")), "viewBox=\"" + viewBox + "\" ");
+            } catch (IndexOutOfBoundsException e) {
+                vbox = svg.substring(svg.indexOf("viewBox="), svg.indexOf("class=\"modeler\""));
+                svg = svg.replace(svg.substring(svg.indexOf("viewBox="), svg.indexOf("class=\"modeler\"")), "viewBox=\"" + viewBox + "\" ");
+            }
+            response.setContentType("image/svg+xml");
+//            svg = svg.replace(vbox, " ");
+            outs.write(svg.getBytes("ISO-8859-1"));
+        } else if ("png".equals(format)) {
+            response.setContentType("image/png; charset=ISO-8859-1");
+
+            String vbox = "";
+            try {
+                vbox = data.substring(data.indexOf("viewBox="), data.indexOf("height="));
+                data = data.replace(data.substring(data.indexOf("viewBox="), data.indexOf("height=")), "viewBox=\"" + viewBox + "\" ");
+            } catch (IndexOutOfBoundsException e) {
+                vbox = data.substring(data.indexOf("viewBox="), data.indexOf("class=\"modeler\""));
+                data = data.replace(data.substring(data.indexOf("viewBox="), data.indexOf("class=\"modeler\"")), "viewBox=\"" + viewBox + "\" ");
+            }
+//            data = data.replace(vbox, " ");
+//            Document svg = SWBUtils.XML.xmlToDom(data);
+//            PNGTranscoder t = new PNGTranscoder();
+//            TranscoderInput input = new TranscoderInput(svg);
+//            TranscoderOutput output = new TranscoderOutput(response.getOutputStream());
+//            try {
+//                t.transcode(input, output);
+//                response.getOutputStream().flush();
+//                response.getOutputStream().close();
+//
+//            } catch (TranscoderException e) {
+//                e.printStackTrace();
+//            }
+            InputStream strStream = new ByteArrayInputStream(data.getBytes("ISO-8859-1"));
+            TranscoderInput ti = new TranscoderInput(strStream/*svgFile.toURI().toString()*/);
+            TranscoderOutput to = new TranscoderOutput(outs);
+
+            PNGTranscoder t = new PNGTranscoder();
+            t.addTranscodingHint(PNGTranscoder.KEY_WIDTH, new Float(values[2]) + 2048);
+            t.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, new Float(values[3]) + 1292);
+            t.addTranscodingHint(PNGTranscoder.KEY_FORCE_TRANSPARENT_WHITE, Boolean.TRUE);
+            try {
+                t.transcode(ti, to);
+            } catch (TranscoderException ex) {
+                log.error("Ocurrió un problema al generar la imagen", ex);
+            }
+        }
+    }
+
     /**
      * Obtiene la lista de procesos a los cuales tiene acceso el usuario.
      *
@@ -301,21 +382,26 @@ public class UserDocumentationResource extends GenericAdmResource {
          }
          }
          }*/
-
+        ProcessGroup processGroup = ProcessGroup.ClassMgr.getProcessGroup(pg, site);
         Iterator<Process> processes = SWBComparator.sortByDisplayName(Process.ClassMgr.listProcesses(site), user.getLanguage() != null ? user.getLanguage() : "es");
         while (processes.hasNext()) {
             Process process = processes.next();
-            if (process.isValid() && !unpaged.contains(process)) {
-                if (!pg.equals("")) {
-                    if (pg.equals(process.getProcessGroup().getId())) {
+
+            if (process.isValid() && process.getProcessGroup() != null && process.isActive() && !unpaged.contains(process)) {
+                if (!pg.equals("") && processGroup != null) {
+                    if (processGroup.hasProcess(process)) {
                         unpaged.add(process);
+                    } else {
+                        addProcess(processGroup, process, true);
+                        if (ischild) {
+                            unpaged.add(process);
+                        }
                     }
                 } else {
                     unpaged.add(process);
                 }
             }
         }
-
         //Realizar paginado de instancias
         int maxPages = 1;
         if (request.getParameter("p") != null && !request.getParameter("p").trim().equals("")) {
@@ -493,7 +579,7 @@ public class UserDocumentationResource extends GenericAdmResource {
                                     list.add(semObj);
                                 }
                                 String value = ""
-                                        + "<div class=\"row\">\n"
+                                        + "<div class=\"row\" id=\"" + act.getActivityRef().getURI() + "\">\n"
                                         + "     <div class=\"col-lg-9 col-md-9 col-sm-9\">\n"
                                         + "         <h4 class=\"list-group-item-heading\">" + act.getActivityRef().getProcessActivity().getTitle() + "</h4>\n"
                                         + "         <p>" + act.getActivityRef().getProcessActivity().getDescription() + "</p>\n"
@@ -583,9 +669,6 @@ public class UserDocumentationResource extends GenericAdmResource {
                 }
             }
 
-
-
-
 //            Element root = document.createElement("root");
 //            root.setAttribute("title", process.getTitle());
 //            root.setAttribute("uri", process.getURI());
@@ -659,8 +742,6 @@ public class UserDocumentationResource extends GenericAdmResource {
 //                }
 //            }
 
-
-
 //////            Iterator<GraphicalElement> iterator = process.listAllContaineds();
 //////            // get Types
 //////            Map types = new HashMap();
@@ -707,7 +788,6 @@ public class UserDocumentationResource extends GenericAdmResource {
 //////                root.appendChild(section);
 //////            }
 //////            root.appendChild(document.createTextNode("\n"));
-
             String path = SWBPortal.getWorkPath() + "/models/" + paramRequest.getWebPage().getWebSiteId() + "/Resource/" + process.getTitle() + "/";
             File folder = new File(path);
             if (!folder.exists()) {
@@ -723,8 +803,8 @@ public class UserDocumentationResource extends GenericAdmResource {
 
     public static String getProcessElementModel(String data, String uri, String mode) {
         ProcessElement pe = (ProcessElement) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(uri);
-        String model =
-                //        String model = "        <link href=\"" + SWBPortal.getContextPath() + "/swbadmin/css/bootstrap/bootstrap.css\" rel=\"stylesheet\" type=\"text/css\"></link>\n"
+        String model
+                = //        String model = "        <link href=\"" + SWBPortal.getContextPath() + "/swbadmin/css/bootstrap/bootstrap.css\" rel=\"stylesheet\" type=\"text/css\"></link>\n"
                 //                + "        <link href=\"" + SWBPortal.getContextPath() + "/swbadmin/css/fontawesome/font-awesome.css\" rel=\"stylesheet\" type=\"text/css\"></link>\n"
                 //+ "        <link href=\"" + SWBPortal.getContextPath() + "/swbadmin/jsp/process/commons/css/swbp.css\" rel=\"stylesheet\" type=\"text/css\"></link>\n"
                 "        <link href=\"" + SWBPortal.getContextPath() + "/swbadmin/jsp/process/modeler/images/modelerFrame.css\" rel=\"stylesheet\" type=\"text/css\"></link>\n"
@@ -743,7 +823,7 @@ public class UserDocumentationResource extends GenericAdmResource {
                     + "        <script type=\"text/javascript\" src=\"js/modeler/modeler.js\"></script>\n"
                     + "        <script src=\"js/bootstrap/bootstrap.js\"></script>\n";
         }
-        model += "<ul class=\"list-unstyled list-inline hidden-print visible-lg text-center\">\n"
+        model += "<ul class=\"list-unstyled list-inline hidden-print text-center\">\n"
                 + "    <li>\n"
                 + "        <a href=\"#\" class=\"btn btn-default\" data-placement=\"bottom\" data-toggle=\"tooltip\" data-original-title=\"Zoom in\" onclick=\"zoomin();return false;\"><i class=\"fa fa-search-plus\"></i></a>\n"
                 + "    </li>\n"
@@ -764,6 +844,12 @@ public class UserDocumentationResource extends GenericAdmResource {
                 + "    </li>\n"
                 + "    <li>\n"
                 + "        <a href=\"#\" class=\"btn btn-default\" data-placement=\"bottom\" data-toggle=\"tooltip\" data-original-title=\"Pan right\" onclick=\"handlePanning('right');return false;\"><i class=\"fa fa-arrow-right\"></i></a>\n"
+                + "    </li>\n"
+                + "    <li>\n"
+                + "        <a href=\"#\" class=\"btn btn-default\" data-placement=\"bottom\" data-toggle=\"tooltip\" data-original-title=\"Descargar PNG\" onclick=\"submit_download_form('png');\"><i class=\"fa fa-file-image-o\"></i></a>\n"
+                + "    </li>\n"
+                + "    <li>\n"
+                + "        <a href=\"#\" class=\"btn btn-default\" data-placement=\"bottom\" data-toggle=\"tooltip\" data-original-title=\"Descargar SVG\" onclick=\"submit_download_form('svg');\"><i class=\"fa fa-file-code-o\"></i></a>\n"
                 + "    </li>\n"
                 + "</ul>\n"
                 + "              <svg id=\"modeler\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"100\" height=\"100\" viewBox=\"0 0 1200 800\" class=\"modeler\">\n"
@@ -907,14 +993,14 @@ public class UserDocumentationResource extends GenericAdmResource {
                 + "                        stroke:#ffffff;\n"
                 + "                        stroke-opacity:0.1;\n"
                 + "                        stroke-width:8;\n"
-                + "                        cursor: pointer;\n"
+                + "                        //cursor: pointer;\n"
                 + "                    }\n"
                 + "\n"
                 + "                    .sequenceFlowSubLine_o {\n"
                 + "                        fill:none;\n"
                 + "                        stroke:#2cff20;\n"
                 + "                        stroke-width:8;\n"
-                + "                        cursor:pointer;\n"
+                + "                        //cursor:pointer;\n"
                 + "                    }\n"
                 + "\n"
                 + "                    .swimlane\n"
@@ -923,7 +1009,7 @@ public class UserDocumentationResource extends GenericAdmResource {
                 + "                        stroke-width:2;\n"
                 + "                        stroke: #ADADAE;\n"
                 + "                        fill-opacity:1;\n"
-                + "                        cursor:pointer;\n"
+                + "                        //cursor:pointer;\n"
                 + "                    }\n"
                 + "\n"
                 + "                    .swimlane_o\n"
@@ -932,7 +1018,7 @@ public class UserDocumentationResource extends GenericAdmResource {
                 + "                        fill: #E8E8FF;\n"
                 + "                        stroke-width:2;\n"
                 + "                        fill-opacity:1;\n"
-                + "                        cursor: pointer;\n"
+                + "                        //cursor: pointer;\n"
                 + "                    }\n"
                 + "\n"
                 + "                    .sequenceFlowLine {\n"
@@ -1445,7 +1531,8 @@ public class UserDocumentationResource extends GenericAdmResource {
                 + "<script type=\"text/javascript\">\n"
                 + "             Modeler.init('modeler', {mode: 'view', layerNavigation: false}, callbackHandler);\n"
                 + "             var zoomFactor = 1.1;\n"
-                + "             var panRate = 10;\n"
+                + "             var panRate = 50;\n"
+                + "             //var panRateLR = 50;\n"
                 + "             function callbackHandler() {\n"
                 + "                 var strJSON = '" + data + "';\n"
                 + "                 Modeler.loadProcess(strJSON);\n"
@@ -1570,5 +1657,41 @@ public class UserDocumentationResource extends GenericAdmResource {
 
     public void doUpdateSuri(HttpServletRequest request, HttpServletResponse response, SWBParamRequest paramRequest) throws SWBResourceException, IOException {
         response.getWriter().print(request.getParameter("suri"));
+    }
+
+    public static List<ProcessGroup> processGroupsParent(WebSite model, String lang) {
+        List<ProcessGroup> list = new ArrayList<ProcessGroup>();
+        Iterator<ProcessGroup> it = SWBComparator.sortByDisplayName(ProcessGroup.ClassMgr.listProcessGroups(model), lang);
+        while (it.hasNext()) {
+            ProcessGroup pg = it.next();
+            if (pg.getParentGroup() == null && pg.listProcesses().hasNext()) {
+                Iterator<Process> itp = pg.listProcesses();
+                while (itp.hasNext()) {
+                    Process process = itp.next();
+                    if (process.isActive()) {
+                        list.add(pg);
+                        break;
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    public void addProcess(ProcessGroup pg, Process process, boolean clear) {
+        if (clear) {
+            ischild = false;
+        }
+        Iterator<ProcessGroup> it = pg.listProcessGroups();
+        while (it.hasNext()) {
+            ProcessGroup processGroup = it.next();
+            if (processGroup.hasProcess(process)) {
+                ischild = true;
+                break;
+            } else {
+                addProcess(processGroup, process, false);
+            }
+        }
+
     }
 }
