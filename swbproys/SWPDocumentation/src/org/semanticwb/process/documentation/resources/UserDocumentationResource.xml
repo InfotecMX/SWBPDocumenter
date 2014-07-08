@@ -8,6 +8,11 @@
             <input type="TEXT" name="contentPage" label="ID de la página de captura de documentación:"/>
             <input type="TEXT" name="docRole" label="ID del rol de documentador:"/>
             <input type="TEXT" name="itemsPerPage" label="Elementos a mostrar por página:"/>
+            
+        </fieldset>
+        <fieldset legend="Vista documentación">
+            <input type="TEXT" name="colorForTask" label="Color para tarea seleccionada (default #00cc00):"/>
+            <input type="TEXT" name="timeForColor" label="Tiempo para desvanecer color (default 3 seg):"/>
         </fieldset>
         <fieldset>
             <input type="submit" name="btnSave" id="btnSave" value="Guardar" />

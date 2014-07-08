@@ -188,7 +188,6 @@ public class UserDocumentationResource extends GenericAdmResource {
         response.setContentType("text/html; charset=UTF-8");
         String jsp = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/userDocumentation.jsp";
         RequestDispatcher rd = request.getRequestDispatcher(jsp);
-
         try {
             request.setAttribute(ATT_PARAMREQUEST, paramRequest);
             request.setAttribute(ATT_PROCESSLIST, listUserProcesses(paramRequest.getUser(), paramRequest.getWebPage().getWebSite(), request));
@@ -203,6 +202,8 @@ public class UserDocumentationResource extends GenericAdmResource {
         String jsp = "/work/models/" + paramRequest.getWebPage().getWebSiteId() + "/jsp/documentation/userDocumentationView.jsp";
         RequestDispatcher rd = request.getRequestDispatcher(jsp);
         try {
+            request.setAttribute("colorForTask", getResourceBase().getAttribute("colorForTask") != null ? getResourceBase().getAttribute("colorForTask") : "#00cc00");
+            request.setAttribute("timeForColor", getResourceBase().getAttribute("timeForColor") != null ? getResourceBase().getAttribute("timeForColor") : "3");
             request.setAttribute(ATT_PARAMREQUEST, paramRequest);
             rd.include(request, response);
         } catch (ServletException ex) {
@@ -286,9 +287,6 @@ public class UserDocumentationResource extends GenericAdmResource {
             //Corregir clases en objetos de datos
             svg = svg.replace("<g id=\"data\" bclass=\"itemaware\" oclass=\"itemaware_o\">", "<g id=\"data\" bclass=\"itemaware\" oclass=\"itemaware_o\" class=\"itemAware\">");
             svg = svg.replace("<g id=\"dataStore\" bclass=\"itemaware\" oclass=\"itemaware_o\" transform=\"translate(-12,-10)\">", "<g id=\"dataStore\" bclass=\"itemaware\" oclass=\"itemaware_o\" transform=\"translate(-12,-10)\" class=\"itemAware\">");
-//            String vbox = svg.substring(svg.indexOf("viewBox="), svg.indexOf("height="));
-
-//            svg = svg.replace(svg.substring(svg.indexOf("viewBox="), svg.indexOf("height=")), "viewBox=\"0 0 1777 1047\" ");
             String vbox = "";
             try {
                 vbox = svg.substring(svg.indexOf("viewBox="), svg.indexOf("height="));
@@ -298,11 +296,9 @@ public class UserDocumentationResource extends GenericAdmResource {
                 svg = svg.replace(svg.substring(svg.indexOf("viewBox="), svg.indexOf("class=\"modeler\"")), "viewBox=\"" + viewBox + "\" ");
             }
             response.setContentType("image/svg+xml");
-//            svg = svg.replace(vbox, " ");
             outs.write(svg.getBytes("ISO-8859-1"));
         } else if ("png".equals(format)) {
             response.setContentType("image/png; charset=ISO-8859-1");
-
             String vbox = "";
             try {
                 vbox = data.substring(data.indexOf("viewBox="), data.indexOf("height="));
@@ -586,7 +582,6 @@ public class UserDocumentationResource extends GenericAdmResource {
                                         + "     </div>\n"
                                         + "     <div class=\"col-lg-3 col-md-3 col-sm-3\">\n";
                                 if (itser.hasNext()) {
-
                                     value += "         <button class=\"btn btn-success pull-right collapsed\" data-toggle=\"collapse\" data-parent=\"#panel" + se.getId() + "\" href=\"#seact" + se.getId() + "\">\n"
                                             + "             <span class=\"fa fa-caret-down fa-fw\"></span>\n"
                                             + "             " + paramRequest.getLocaleString("lblRelations") + "\n"
@@ -1588,7 +1583,7 @@ public class UserDocumentationResource extends GenericAdmResource {
                 + "                     case 'up':\n"
                 + "                         viewBoxValues[1] += panRate;\n"
                 + "                         break;\n"
-                + "                         case 'down':\n"
+                + "                     case 'down':\n"
                 + "                         viewBoxValues[1] -= panRate;\n"
                 + "                         break;\n"
                 + "                 }\n"
@@ -1664,18 +1659,49 @@ public class UserDocumentationResource extends GenericAdmResource {
         Iterator<ProcessGroup> it = SWBComparator.sortByDisplayName(ProcessGroup.ClassMgr.listProcessGroups(model), lang);
         while (it.hasNext()) {
             ProcessGroup pg = it.next();
-            if (pg.getParentGroup() == null && pg.listProcesses().hasNext()) {
-                Iterator<Process> itp = pg.listProcesses();
-                while (itp.hasNext()) {
-                    Process process = itp.next();
-                    if (process.isActive()) {
-                        list.add(pg);
-                        break;
-                    }
+
+            if (pg.getParentGroup() == null) {
+                containPA(pg, true);
+                if (contain) {
+                    list.add(pg);
                 }
             }
         }
         return list;
+    }
+    static boolean contain = false;
+
+    public static void containPA(ProcessGroup parent, boolean clear) {
+        if (clear) {
+            contain = false;
+        }
+        Iterator<org.semanticwb.process.model.Process> iterator = parent.listProcesses();
+        while (iterator.hasNext()) {
+            Process process = iterator.next();
+            if (process.isActive()) {
+                contain = true;
+                break;
+            }
+        }
+        if (!contain) {
+            Iterator<ProcessGroup> it = parent.listProcessGroups();
+            while (it.hasNext()) {
+                ProcessGroup pg = it.next();
+                if (pg.listProcesses().hasNext()) {
+                    iterator = pg.listProcesses();
+                    while (iterator.hasNext()) {
+                        org.semanticwb.process.model.Process process = iterator.next();
+                        if (process.isActive()) {
+                            contain = true;
+                            break;
+                        }
+                    }
+                }
+                if (pg.listProcessGroups().hasNext() && !contain) {
+                    containPA(pg, false);
+                }
+            }
+        }
     }
 
     public void addProcess(ProcessGroup pg, Process process, boolean clear) {
