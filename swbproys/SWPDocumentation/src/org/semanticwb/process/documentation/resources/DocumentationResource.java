@@ -146,7 +146,20 @@ public class DocumentationResource extends GenericAdmResource {
         if (processElement != null) {
             model = processElement.getProcessSite();
         }
-        if (action.equals(GENERATE_VERSION)) {
+        if (action.equals("updateFill")) {
+            String fill = request.getParameter("updateFill");
+            if (request.getParameter("surifill") != null) {
+                Activity activity = (Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(request.getParameter("surifill"));
+                if (activity != null) {
+                    if (fill.equals("defaultFill")) {
+                        activity.setFill(null);
+                    } else {
+                        activity.setFill(fill);
+                    }
+                }
+            }
+
+        } else if (action.equals(GENERATE_VERSION)) {
             String uridi = request.getParameter("uridi") != null ? request.getParameter("uridi") : "";
             suri = request.getParameter("suri") != null ? request.getParameter("suri") : "";
             String uridsi = "";
@@ -178,9 +191,9 @@ public class DocumentationResource extends GenericAdmResource {
 //                        String tlpPath = "/swbadmin/jsp/process/documentation/documentation.xsl";
                         String tlpPath = "/work/models/" + response.getWebPage().getWebSiteId() + "/jsp/documentation/documentation.xsl";
                         javax.xml.transform.Templates tpl = SWBUtils.XML.loadTemplateXSLT(new FileInputStream(SWBUtils.getApplicationPath() + tlpPath));
-                        out.write(SWBUtils.XML.transformDom(tpl, dom).getBytes());
+                        out.write(SWBUtils.XML.transformDom(tpl, dom).getBytes("UTF-8"));
                     }
-                    out.write(modals.getBytes());
+                    out.write(modals.getBytes("UTF-8"));
                     out.flush();
                     out.close();
                 } catch (Exception e) {
@@ -435,9 +448,14 @@ public class DocumentationResource extends GenericAdmResource {
                         Iterator<SectionElementRef> itser = SWBComparator.sortSortableObject(act.listSectionElementRefs());
                         while (itser.hasNext()) {
                             SectionElementRef sert = itser.next();
-                            if (sert.getSectionElement().equals(set)) {
-                                ser = sert;
-                                break;
+                            if (sert.getSectionElement() != null) {
+                                if (sert.getSectionElement().equals(set)) {
+                                    ser = sert;
+                                    break;
+                                }
+                            } else{
+                                sert.remove();
+                                act.removeSectionElementRef(sert);
                             }
                         }
                         if (ser == null && request.getParameter(uriset) != null) {
@@ -841,9 +859,11 @@ public class DocumentationResource extends GenericAdmResource {
 
     public Document getDom(String suri, String lang, SWBActionResponse paramRequest, HttpServletRequest request, Documentation documentation) throws TransformerConfigurationException, TransformerException, SWBResourceException, FileNotFoundException, IOException {
         org.w3c.dom.Document document = SWBUtils.XML.getNewDocument();
+        String labelRelations = getResourceBase().getAttribute("labelRelations") != null ? getResourceBase().getAttribute("labelRelations") : "Relacionados";
         org.semanticwb.process.model.Process process = (org.semanticwb.process.model.Process) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(suri);
         modals = "";
         if (process != null) {
+            String colorTask = "";
             boolean hasModel = false;
             Element root = document.createElement("root");
             root.setAttribute("title", process.getTitle());
@@ -933,7 +953,6 @@ public class DocumentationResource extends GenericAdmResource {
                             }
                             instance.appendChild(document.createTextNode("\n\t\t"));
                         } else {//Si es Activity o FreeText
-
                             //SWBResourceURL urlDialog = paramRequest.getRenderUrl().setCallMethod(SWBResourceURL.Call_DIRECT).setParameter("suri", suri);
                             instance.appendChild(document.createTextNode("\n\t\t\t"));
                             Element property = document.createElement("property");
@@ -941,6 +960,13 @@ public class DocumentationResource extends GenericAdmResource {
                                 property.setAttribute("propid", Descriptiveable.swb_title.getPropId());
                                 property.setAttribute("type", dsi.getSecTypeDefinition().getTitle());
                                 Activity act = (Activity) SWBPlatform.getSemanticMgr().getOntology().getGenericObject(se.getURI());
+
+                                if (act.getFill() != null) {
+                                    if (colorTask.length() > 0) {
+                                        colorTask += "|";
+                                    }
+                                    colorTask += act.getActivityRef().getProcessActivity().getURI() + ";" + act.getFill();
+                                }
                                 property.setAttribute("id", act.getActivityRef().getProcessActivity().getId());
                                 Iterator<SectionElementRef> itser = SWBComparator.sortSortableObject(act.listSectionElementRefs());
                                 Iterator<SemanticObject> itso = SWBComparator.sortSortableObject(paramRequest.getWebPage().getWebSite().getSemanticModel().listSubjects(SectionElementRef.swpdoc_activity, act.getSemanticObject()));
@@ -980,7 +1006,7 @@ public class DocumentationResource extends GenericAdmResource {
                                     value += "         <button class=\"btn btn-success pull-right collapsed\" data-toggle=\"collapse\" data-parent=\"#panel" + se.getId() + "\" href=\"#seact" + se.getId() + "\">\n"
                                             + "             <span class=\"fa fa-caret-down fa-fw\"></span>\n"
                                             //                                            + "             " + paramRequest.getLocaleString("lblRelations") + "\n"
-                                            + "             Relacionados\n"
+                                            + "             " + labelRelations + "\n"
                                             + "         </button>\n";
                                 }
                                 value += "     </div>\n"
@@ -1104,9 +1130,30 @@ public class DocumentationResource extends GenericAdmResource {
                 Element model = document.createElement("model");
                 root.appendChild(document.createTextNode("\n\t"));
                 String mode = paramRequest.getMode();
-                model.appendChild(document.createTextNode(getProcessElementModel(process.getData(), suri, mode) + "\n\t\t"));
+                String data = process.getData();
+                data = data.replace("\\n", "");
+                data = data.replace("\\r", "");
+                data = data.replace("\\\"", "");
+                model.appendChild(document.createTextNode(getProcessElementModel(data, suri, mode) + "\n\t\t"));
                 root.appendChild(model);
                 root.appendChild(document.createTextNode("\n\t"));
+                if (colorTask.length() > 0) {
+                    Element colorTaskE = document.createElement("colorTask");
+                    root.appendChild(document.createTextNode("\n\t"));
+
+                    String[] tasks = colorTask.split("\\|");
+                    int i = 1;
+                    String script = "<script>";
+                    for (String task : tasks) {
+                        script += "var colorTask" + i + " = $(document.getElementById('" + task.substring(0, task.lastIndexOf(";")) + "')).attr('style', 'fill:#" + task.substring(task.lastIndexOf(";") + 1, task.length()) + "');";
+                        i++;
+//                    script +=" var colorTask= $(document.getElementById('" + task.substring(0, task.lastIndexOf(";") +"')).attr('style','fill:'"+task.substring(task.lastIndexOf(";"), task.length())+"");"));
+                    }
+                    script += "</script>";
+                    colorTaskE.appendChild(document.createTextNode(script + "\n\t\t"));
+                    root.appendChild(colorTaskE);
+                    root.appendChild(document.createTextNode("\n\t"));
+                }
             }
 
             String path = SWBPortal.getWorkPath() + "/models/" + paramRequest.getWebPage().getWebSiteId() + "/Resource/" + process.getTitle() + "/";
