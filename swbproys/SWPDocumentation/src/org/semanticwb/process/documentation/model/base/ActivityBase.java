@@ -1,12 +1,13 @@
 package org.semanticwb.process.documentation.model.base;
 
 
-public abstract class ActivityBase extends org.semanticwb.process.documentation.model.SectionElement implements org.semanticwb.model.Descriptiveable,org.semanticwb.model.Sortable,org.semanticwb.model.Traceable
+public abstract class ActivityBase extends org.semanticwb.process.documentation.model.SectionElement implements org.semanticwb.model.Descriptiveable,org.semanticwb.model.Traceable,org.semanticwb.model.Sortable
 {
     public static final org.semanticwb.platform.SemanticClass swpdoc_ActivityRef=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass("http://www.semanticwebbuilder.org/resources/documentation#ActivityRef");
     public static final org.semanticwb.platform.SemanticProperty swpdoc_activityRef=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticProperty("http://www.semanticwebbuilder.org/resources/documentation#activityRef");
     public static final org.semanticwb.platform.SemanticClass swpdoc_SectionElementRef=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass("http://www.semanticwebbuilder.org/resources/documentation#SectionElementRef");
     public static final org.semanticwb.platform.SemanticProperty swpdoc_hasSectionElementRef=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticProperty("http://www.semanticwebbuilder.org/resources/documentation#hasSectionElementRef");
+    public static final org.semanticwb.platform.SemanticProperty swpdoc_fill=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticProperty("http://www.semanticwebbuilder.org/resources/documentation#fill");
     public static final org.semanticwb.platform.SemanticClass swpdoc_Activity=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass("http://www.semanticwebbuilder.org/resources/documentation#Activity");
    /**
    * The semantic class that represents the currentObject
@@ -337,5 +338,23 @@ public abstract class ActivityBase extends org.semanticwb.process.documentation.
              ret=(org.semanticwb.process.documentation.model.SectionElementRef)obj.createGenericInstance();
          }
          return ret;
+    }
+
+/**
+* Gets the Fill property
+* @return String with the Fill
+*/
+    public String getFill()
+    {
+        return getSemanticObject().getProperty(swpdoc_fill);
+    }
+
+/**
+* Sets the Fill property
+* @param value long with the Fill
+*/
+    public void setFill(String value)
+    {
+        getSemanticObject().setProperty(swpdoc_fill, value);
     }
 }
