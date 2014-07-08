@@ -1,7 +1,7 @@
 package org.semanticwb.process.documentation.model.base;
 
 
-public abstract class PolicyBase extends org.semanticwb.process.documentation.model.SectionElement implements org.semanticwb.process.documentation.model.Instantiable,org.semanticwb.model.Descriptiveable,org.semanticwb.process.documentation.model.Numerable,org.semanticwb.model.Sortable,org.semanticwb.model.Traceable,org.semanticwb.process.documentation.model.Prefixeable
+public abstract class PolicyBase extends org.semanticwb.process.documentation.model.SectionElement implements org.semanticwb.process.documentation.model.Instantiable,org.semanticwb.model.Descriptiveable,org.semanticwb.process.documentation.model.Prefixeable,org.semanticwb.process.documentation.model.Numerable,org.semanticwb.model.Traceable,org.semanticwb.model.Sortable
 {
     public static final org.semanticwb.platform.SemanticClass swpdoc_Policy=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass("http://www.semanticwebbuilder.org/resources/documentation#Policy");
    /**

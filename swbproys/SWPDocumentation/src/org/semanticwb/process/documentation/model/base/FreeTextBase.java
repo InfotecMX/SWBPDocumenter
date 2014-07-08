@@ -1,7 +1,7 @@
 package org.semanticwb.process.documentation.model.base;
 
 
-public abstract class FreeTextBase extends org.semanticwb.process.documentation.model.SectionElement implements org.semanticwb.model.Descriptiveable,org.semanticwb.model.Sortable,org.semanticwb.model.Traceable
+public abstract class FreeTextBase extends org.semanticwb.process.documentation.model.SectionElement implements org.semanticwb.model.Descriptiveable,org.semanticwb.model.Traceable,org.semanticwb.model.Sortable
 {
     public static final org.semanticwb.platform.SemanticProperty swpdoc_text=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticProperty("http://www.semanticwebbuilder.org/resources/documentation#text");
     public static final org.semanticwb.platform.SemanticClass swpdoc_FreeText=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass("http://www.semanticwebbuilder.org/resources/documentation#FreeText");

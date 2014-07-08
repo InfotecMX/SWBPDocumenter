@@ -1,7 +1,7 @@
 package org.semanticwb.process.documentation.model.base;
 
 
-public abstract class DocumentSectionBase extends org.semanticwb.model.SWBClass implements org.semanticwb.model.Activeable,org.semanticwb.model.Descriptiveable,org.semanticwb.model.Sortable,org.semanticwb.model.Traceable,org.semanticwb.process.documentation.model.Prefixeable
+public abstract class DocumentSectionBase extends org.semanticwb.model.SWBClass implements org.semanticwb.model.Activeable,org.semanticwb.model.Descriptiveable,org.semanticwb.process.documentation.model.Prefixeable,org.semanticwb.model.Traceable,org.semanticwb.model.Sortable
 {
     public static final org.semanticwb.platform.SemanticProperty swpdoc_configData=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticProperty("http://www.semanticwebbuilder.org/resources/documentation#configData");
     public static final org.semanticwb.platform.SemanticClass swpdoc_SectionElement=org.semanticwb.SWBPlatform.getSemanticMgr().getVocabulary().getSemanticClass("http://www.semanticwebbuilder.org/resources/documentation#SectionElement");
@@ -226,24 +226,6 @@ public abstract class DocumentSectionBase extends org.semanticwb.model.SWBClass 
     }
 
 /**
-* Gets the Updated property
-* @return java.util.Date with the Updated
-*/
-    public java.util.Date getUpdated()
-    {
-        return getSemanticObject().getDateProperty(swb_updated);
-    }
-
-/**
-* Sets the Updated property
-* @param value long with the Updated
-*/
-    public void setUpdated(java.util.Date value)
-    {
-        getSemanticObject().setDateProperty(swb_updated, value);
-    }
-
-/**
 * Gets the Created property
 * @return java.util.Date with the Created
 */
@@ -259,6 +241,24 @@ public abstract class DocumentSectionBase extends org.semanticwb.model.SWBClass 
     public void setCreated(java.util.Date value)
     {
         getSemanticObject().setDateProperty(swb_created, value);
+    }
+
+/**
+* Gets the Updated property
+* @return java.util.Date with the Updated
+*/
+    public java.util.Date getUpdated()
+    {
+        return getSemanticObject().getDateProperty(swb_updated);
+    }
+
+/**
+* Sets the Updated property
+* @param value long with the Updated
+*/
+    public void setUpdated(java.util.Date value)
+    {
+        getSemanticObject().setDateProperty(swb_updated, value);
     }
 
 /**
